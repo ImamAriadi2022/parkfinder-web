@@ -1,0 +1,46 @@
+/* LandingPage specific styles */
+.landing { padding-top: 70px; }
+
+/* Hero */
+.hero-section { position: relative; min-height: 90vh; display: flex; align-items: center; overflow: hidden; }
+.hero-bg { position: absolute; inset: 0; z-index: 0; }
+.hero-bg-img { width: 100%; height: 100%; object-fit: cover; opacity: 0.15; }
+.hero-overlay { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(13,22,40,0.97) 40%, rgba(13,22,40,0.65) 100%); }
+.hero-title { font-size: 52px; line-height: 1.1; letter-spacing: -1.5px; }
+.hero-desc { font-size: 17px; max-width: 480px; }
+.hero-car-container { position: relative; height: 340px; }
+.hero-building { width: 100%; height: 100%; object-fit: cover; border-radius: 16px; opacity: 0.7; border: 1px solid var(--pf-border); }
+.hero-car { position: absolute; bottom: -16px; right: -16px; width: 72%; }
+
+/* Stats */
+.stat-value {
+  font-size: 40px; font-weight: 900; line-height: 1;
+  background: linear-gradient(90deg, var(--pf-accent), #0099DD);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  margin-bottom: 6px;
+}
+.stat-label { font-size: 14px; color: var(--pf-text2); font-weight: 500; }
+
+/* Parking icon */
+.parking-icon-box {
+  width: 48px; height: 48px; background: var(--pf-card2); border: 1px solid var(--pf-border);
+  border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px;
+}
+
+/* Steps */
+.step-number-big {
+  font-size: 56px; font-weight: 900; line-height: 1;
+  background: linear-gradient(135deg, var(--pf-accent), var(--pf-accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  opacity: 0.55; margin-bottom: 16px;
+}
+.step-img-wrap { border-radius: 16px; overflow: hidden; border: 1px solid var(--pf-border); background: var(--pf-card); }
+.step-img { width: 100%; display: block; }
+
+@media (max-width: 991px) {
+  .hero-title { font-size: 38px; }
+  .hero-car-container { height: 240px; max-width: 420px; margin: 0 auto; }
+}
+@media (max-width: 576px) {
+  .hero-title { font-size: 30px; }
+}

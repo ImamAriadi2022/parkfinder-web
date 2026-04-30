@@ -1,0 +1,25 @@
+/* Parking list items */
+.parking-list-item {
+  padding: 14px 20px; border-bottom: 1px solid var(--pf-border);
+  cursor: pointer; transition: background 0.15s;
+}
+.parking-list-item:hover { background: var(--pf-card2); }
+.item-selected { background: rgba(0,210,255,0.07) !important; border-left: 3px solid var(--pf-accent) !important; }
+.item-disabled { opacity: 0.45; cursor: not-allowed; }
+.item-name { font-size: 14px; font-weight: 600; color: var(--pf-text); margin-bottom: 2px; }
+
+/* Slot buttons */
+.slot-btn {
+  padding: 12px 6px; border-radius: 10px; font-size: 13px; font-weight: 700;
+  background: rgba(76,175,80,0.12); border: 1.5px solid var(--pf-green);
+  color: var(--pf-green); cursor: pointer; transition: all 0.15s; font-family: 'Inter',sans-serif;
+}
+.slot-btn:hover:not(:disabled) { background: rgba(76,175,80,0.25); transform: scale(1.04); }
+.slot-taken { background: rgba(239,83,80,0.07) !important; border-color: var(--pf-border) !important; color: var(--pf-text3) !important; cursor: not-allowed !important; }
+.slot-picked { background: rgba(0,210,255,0.15) !important; border-color: var(--pf-accent) !important; color: var(--pf-accent) !important; box-shadow: 0 0 12px rgba(0,210,255,0.3); }
+
+/* Slot action area */
+.slot-action-box {
+  background: var(--pf-card2); border: 1px solid var(--pf-border);
+  border-radius: 12px; padding: 16px; margin-top: 8px;
+}

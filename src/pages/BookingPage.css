@@ -1,0 +1,41 @@
+/* Stepper */
+.pf-stepper { display: flex; align-items: center; }
+.pf-step { display: flex; align-items: center; flex: 1; gap: 0; }
+.pf-step-circle {
+  width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0; z-index: 1;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700;
+  background: var(--pf-card2); border: 2px solid var(--pf-border); color: var(--pf-text3);
+  transition: all 0.3s;
+}
+.pf-step.active .pf-step-circle { background: var(--pf-accent-glow); border-color: var(--pf-accent); color: var(--pf-accent); }
+.pf-step.done .pf-step-circle   { background: var(--pf-green); border-color: var(--pf-green); color: #fff; }
+.pf-step-label { font-size: 13px; color: var(--pf-text3); margin-left: 10px; white-space: nowrap; font-weight: 500; }
+.pf-step.active .pf-step-label  { color: var(--pf-accent); }
+.pf-step.done .pf-step-label    { color: var(--pf-green); }
+.pf-step-line { flex: 1; height: 2px; background: var(--pf-border); margin: 0 12px; transition: background 0.3s; }
+.pf-step.done .pf-step-line { background: var(--pf-green); }
+
+/* Duration button */
+.duration-btn { min-width: 72px; }
+
+/* Ticket */
+.ticket-box {
+  background: var(--pf-card2); border: 1.5px solid var(--pf-border2);
+  border-radius: 16px; padding: 24px; text-align: left;
+  box-shadow: 0 0 20px rgba(0,210,255,0.15);
+}
+.ticket-code {
+  font-size: 26px; font-weight: 900; letter-spacing: 3px; font-family: monospace;
+  color: var(--pf-text); background: var(--pf-bg); border: 1px dashed var(--pf-border2);
+  border-radius: 10px; padding: 12px; text-align: center; margin: 12px 0;
+}
+.qr-box {
+  background: var(--pf-bg); border: 1px dashed var(--pf-border);
+  border-radius: 12px; padding: 20px;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+
+@media (max-width: 576px) {
+  .pf-step-label { display: none; }
+}
