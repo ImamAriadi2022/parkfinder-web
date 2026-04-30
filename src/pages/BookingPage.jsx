@@ -208,9 +208,23 @@ export default function BookingPage() {
                     </div>
                   </div>
 
-                  <div className="d-flex gap-3 justify-content-center">
-                    <Button className="btn-pf-outline btn" onClick={() => navigate('/parking')}>Booking Lagi</Button>
-                    <Button className="btn-pf-primary btn"  onClick={() => navigate('/')}>Ke Beranda</Button>
+                  <div className="d-flex flex-wrap gap-3 justify-content-center">
+                    <Button
+                      className="btn-pf-outline btn"
+                      onClick={() => navigate('/swap', {
+                        state: {
+                          ticketCode,
+                          name: form.name,
+                          plate: form.plate,
+                          phone: form.phone,
+                          parking,
+                        }
+                      })}
+                    >
+                      🔄 Tukar Slot
+                    </Button>
+                    <Button className="btn-pf-ghost btn" onClick={() => navigate('/parking')}>Booking Lagi</Button>
+                    <Button className="btn-pf-primary btn" onClick={() => navigate('/')}>Ke Beranda</Button>
                   </div>
                 </Card.Body>
               </Card>

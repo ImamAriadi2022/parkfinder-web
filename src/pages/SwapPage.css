@@ -1,0 +1,89 @@
+/* Reuse from ParkingPage */
+.swap-list-item {
+  padding: 14px 20px; border-bottom: 1px solid var(--pf-border);
+  cursor: pointer; transition: background 0.15s;
+}
+.swap-list-item:hover { background: var(--pf-card2); }
+.swap-list-item.item-selected { background: rgba(0,210,255,0.07) !important; border-left: 3px solid var(--pf-accent); }
+.swap-list-item.item-current { opacity: 0.45; cursor: not-allowed; }
+.item-name { font-size: 14px; font-weight: 600; color: var(--pf-text); margin-bottom: 2px; }
+
+/* Slot buttons (same as ParkingPage) */
+.slot-btn {
+  padding: 12px 6px; border-radius: 10px; font-size: 13px; font-weight: 700;
+  background: rgba(76,175,80,0.12); border: 1.5px solid var(--pf-green);
+  color: var(--pf-green); cursor: pointer; transition: all 0.15s; font-family: 'Inter',sans-serif;
+}
+.slot-btn:hover:not(:disabled) { background: rgba(76,175,80,0.25); transform: scale(1.04); }
+.slot-taken { background: rgba(239,83,80,0.07) !important; border-color: var(--pf-border) !important; color: var(--pf-text3) !important; cursor: not-allowed !important; }
+.slot-picked { background: rgba(0,210,255,0.15) !important; border-color: var(--pf-accent) !important; color: var(--pf-accent) !important; box-shadow: 0 0 12px rgba(0,210,255,0.3); }
+.slot-action-box { background: var(--pf-card2); border: 1px solid var(--pf-border); border-radius: 12px; padding: 16px; margin-top: 8px; }
+
+/* Swap preview (inline from → to) */
+.swap-preview {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--pf-bg); border-radius: 10px; padding: 12px 16px;
+  border: 1px solid var(--pf-border); margin-bottom: 4px;
+}
+.swap-preview-item { flex: 1; }
+.swap-arrow { font-size: 20px; color: var(--pf-accent); font-weight: 700; flex-shrink: 0; }
+
+/* Confirm compare box */
+.swap-compare-box {
+  display: flex; align-items: center; gap: 16px;
+  background: var(--pf-bg); border-radius: 14px; padding: 20px;
+  border: 1.5px solid var(--pf-border);
+}
+.swap-compare-side { flex: 1; text-align: center; }
+.swap-compare-label { font-size: 11px; color: var(--pf-text3); font-weight: 700; letter-spacing: 1px; margin-bottom: 10px; }
+.swap-compare-arrow { font-size: 28px; flex-shrink: 0; }
+.swap-compare-slot {
+  background: var(--pf-card2); border-radius: 10px; padding: 14px;
+  border: 1.5px solid var(--pf-border);
+}
+.swap-compare-slot.new { border-color: var(--pf-border2); background: rgba(0,210,255,0.07); }
+.sc-building { font-size: 12px; color: var(--pf-text2); margin-bottom: 6px; }
+.sc-slot { font-size: 18px; font-weight: 800; color: var(--pf-text); }
+.swap-compare-slot.new .sc-slot { color: var(--pf-accent); }
+
+/* Result compare in ticket */
+.swap-result-compare {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  background: var(--pf-bg); border-radius: 10px; padding: 12px 16px;
+  border: 1px dashed var(--pf-border2); margin-bottom: 4px;
+}
+.src-side { text-align: center; flex: 1; }
+
+/* Ticket (same as BookingPage) */
+.ticket-box {
+  background: var(--pf-card2); border: 1.5px solid var(--pf-border2);
+  border-radius: 16px; padding: 24px; text-align: left;
+  box-shadow: 0 0 20px rgba(0,210,255,0.15);
+}
+.ticket-code {
+  font-size: 22px; font-weight: 900; letter-spacing: 2px; font-family: monospace;
+  color: var(--pf-text); background: var(--pf-bg); border: 1px dashed var(--pf-border2);
+  border-radius: 10px; padding: 12px; text-align: center; margin: 12px 0;
+}
+.qr-box {
+  background: var(--pf-bg); border: 1px dashed var(--pf-border);
+  border-radius: 12px; padding: 16px;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+}
+.pf-divider { height: 1px; background: var(--pf-border); margin: 12px 0; }
+
+/* Spinner */
+.mini-spinner {
+  width: 16px; height: 16px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff; display: inline-block;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 768px) {
+  .swap-compare-box { flex-direction: column; }
+  .swap-compare-arrow { transform: rotate(90deg); }
+  .swap-preview { flex-direction: column; text-align: center; }
+  .swap-arrow { transform: rotate(90deg); }
+}
