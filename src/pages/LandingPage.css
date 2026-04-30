@@ -44,3 +44,19 @@
 @media (max-width: 576px) {
   .hero-title { font-size: 30px; }
 }
+
+/* Download buttons */
+.download-label { font-size: 13px; color: var(--pf-text3); margin-bottom: 10px; font-weight: 500; }
+.download-btn {
+  display: inline-flex; align-items: center; gap: 12px;
+  background: var(--pf-card2); border: 1.5px solid var(--pf-border);
+  border-radius: 12px; padding: 10px 20px; color: var(--pf-text);
+  text-decoration: none; transition: all 0.2s; cursor: pointer;
+}
+.download-btn:hover { border-color: var(--pf-border2); background: rgba(0,210,255,0.08); color: var(--pf-text); }
+.download-btn-lg { padding: 14px 24px; border-radius: 14px; }
+.download-btn-icon { color: var(--pf-accent); display: flex; align-items: center; }
+.download-btn-text { display: flex; flex-direction: column; line-height: 1.2; }
+.download-btn-text small { font-size: 11px; color: var(--pf-text2); }
+.download-btn-text strong { font-size: 16px; color: var(--pf-text); font-weight: 700; }
+.download-btn-lg .download-btn-text strong { font-size: 18px; }

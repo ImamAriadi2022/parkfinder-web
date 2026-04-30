@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { Navbar, Nav, Container, Button } from 'react-bootstrap'
 
+const CDN = 'https://storage.googleapis.com/parkfinderbucket'
+
 export default function AppNavbar() {
   const [scrolled, setScrolled] = useState(false)
   const [expanded, setExpanded] = useState(false)
@@ -33,14 +35,12 @@ export default function AppNavbar() {
           onClick={() => handleNav('/')}
           style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10 }}
         >
-          <span style={{
-            width: 38, height: 38, background: 'linear-gradient(135deg,#00D2FF,#0066AA)',
-            borderRadius: 10, display: 'inline-flex', alignItems: 'center',
-            justifyContent: 'center', fontSize: 20
-          }}>🅿</span>
-          <span style={{ fontSize: 20, fontWeight: 800, color: '#fff', fontFamily: 'Inter,sans-serif' }}>
-            ParkFinder
-          </span>
+          <img
+            src={`${CDN}/foto/logo.png`}
+            alt="ParkFinder"
+            style={{ height: 38, width: 'auto', objectFit: 'contain' }}
+            onError={e => { e.target.style.display='none' }}
+          />
         </Navbar.Brand>
 
         <Navbar.Toggle aria-controls="pf-nav" />

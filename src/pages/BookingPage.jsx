@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { Container, Row, Col, Card, Badge, Button, Form, ProgressBar } from 'react-bootstrap'
+import { Container, Row, Col, Card, Badge, Button, Form } from 'react-bootstrap'
 import './BookingPage.css'
 
 const STEPS = ['Detail Booking', 'Konfirmasi', 'Selesai']
@@ -10,14 +10,11 @@ export default function BookingPage() {
   const location  = useLocation()
   const parking   = location.state || null
 
-  const [step, setStep]               = useState(0)
-  const [form, setForm]               = useState({ name:'', plate:'', phone:'', duration:'2', vehicle:'Mobil' })
-  const [errors, setErrors]           = useState({})
-  const [payMethod, setPayMethod]     = useState('GoPay')
+  const [step, setStep]   = useState(0)
+  const [form, setForm]   = useState({ name: '', plate: '', phone: '' })
+  const [errors, setErrors] = useState({})
 
-  const pricePerHour = parking?.price_num || 5000
-  const totalPrice   = pricePerHour * parseInt(form.duration)
-  const ticketCode   = `PKF-${Date.now().toString(36).toUpperCase().slice(-8)}`
+  const ticketCode = `PKF-${Date.now().toString(36).toUpperCase().slice(-8)}`
 
   const validate = () => {
     const e = {}
@@ -61,9 +58,8 @@ export default function BookingPage() {
             <Col lg={7}>
               <Card>
                 <Card.Body className="p-4">
-                  <h5 className="mb-4" style={{ color: 'var(--pf-text)' }}>Informasi Kendaraan</h5>
+                  <h5 className="mb-4" style={{ color: 'var(--pf-text)' }}>Informasi Pemesan</h5>
 
-                  {/* Nama */}
                   <Form.Group className="mb-3">
                     <Form.Label>Nama Pemesan</Form.Label>
                     <Form.Control
@@ -75,23 +71,6 @@ export default function BookingPage() {
                     <Form.Control.Feedback type="invalid">{errors.name}</Form.Control.Feedback>
                   </Form.Group>
 
-                  {/* Jenis kendaraan */}
-                  <Form.Group className="mb-3">
-                    <Form.Label>Jenis Kendaraan</Form.Label>
-                    <div className="d-flex gap-2">
-                      {['Mobil','Motor'].map(v => (
-                        <Button
-                          key={v}
-                          className={`flex-fill ${form.vehicle === v ? 'btn-pf-primary' : 'btn-pf-ghost'} btn`}
-                          onClick={() => setField('vehicle', v)}
-                        >
-                          {v === 'Mobil' ? '🚗' : '🏍️'} {v}
-                        </Button>
-                      ))}
-                    </div>
-                  </Form.Group>
-
-                  {/* Plat */}
                   <Form.Group className="mb-3">
                     <Form.Label>Nomor Plat Kendaraan</Form.Label>
                     <Form.Control
@@ -103,8 +82,7 @@ export default function BookingPage() {
                     <Form.Control.Feedback type="invalid">{errors.plate}</Form.Control.Feedback>
                   </Form.Group>
 
-                  {/* HP */}
-                  <Form.Group className="mb-3">
+                  <Form.Group className="mb-1">
                     <Form.Label>Nomor HP</Form.Label>
                     <Form.Control
                       type="tel"
@@ -115,22 +93,6 @@ export default function BookingPage() {
                     />
                     <Form.Control.Feedback type="invalid">{errors.phone}</Form.Control.Feedback>
                   </Form.Group>
-
-                  {/* Durasi */}
-                  <Form.Group className="mb-2">
-                    <Form.Label>Durasi Parkir (jam)</Form.Label>
-                    <div className="d-flex flex-wrap gap-2">
-                      {['1','2','3','4','6','8'].map(d => (
-                        <Button
-                          key={d}
-                          className={`duration-btn ${form.duration === d ? 'btn-pf-primary' : 'btn-pf-ghost'} btn btn-sm`}
-                          onClick={() => setField('duration', d)}
-                        >
-                          {d} jam
-                        </Button>
-                      ))}
-                    </div>
-                  </Form.Group>
                 </Card.Body>
               </Card>
             </Col>
@@ -140,32 +102,25 @@ export default function BookingPage() {
                 <Card.Body>
                   <h6 className="mb-3" style={{ color: 'var(--pf-text)' }}>Ringkasan Booking</h6>
                   {[
-                    ['Gedung',    parking?.name || '—'],
-                    ['Slot',      parking ? `${parking.floor} / ${parking.slot}` : '—'],
-                    ['Durasi',    `${form.duration} jam`],
-                    ['Tarif',     parking?.price || '—'],
-                  ].map(([k,v]) => (
-                    <div key={k} className="d-flex justify-content-between mb-2">
-                      <small style={{ color:'var(--pf-text2)' }}>{k}</small>
-                      <small style={{ color:'var(--pf-text)', fontWeight:600, textAlign:'right', maxWidth:200 }}>{v}</small>
+                    ['Gedung', parking?.name || '—'],
+                    ['Alamat', parking?.address || '—'],
+                    ['Slot',   parking ? `${parking.floor} / ${parking.slot}` : '—'],
+                  ].map(([k, v]) => (
+                    <div key={k} className="d-flex justify-content-between mb-2 gap-3">
+                      <small style={{ color: 'var(--pf-text2)', flexShrink: 0 }}>{k}</small>
+                      <small style={{ color: 'var(--pf-text)', fontWeight: 600, textAlign: 'right' }}>{v}</small>
                     </div>
                   ))}
-                  <hr style={{ borderColor:'var(--pf-border)' }} />
-                  <div className="d-flex justify-content-between align-items-center">
-                    <span style={{ fontWeight:600, color:'var(--pf-text)' }}>Total</span>
-                    <span style={{ fontSize:22, fontWeight:800, color:'var(--pf-accent)' }}>
-                      Rp {totalPrice.toLocaleString('id-ID')}
-                    </span>
-                  </div>
                 </Card.Body>
               </Card>
 
               {!parking && (
-                <Card className="mb-3" style={{ borderColor:'var(--pf-orange)', background:'rgba(255,167,38,0.06)' }}>
-                  <Card.Body style={{ padding:'12px 16px' }}>
-                    <small style={{ color:'var(--pf-orange)' }}>
+                <Card className="mb-3" style={{ borderColor: 'var(--pf-orange)', background: 'rgba(255,167,38,0.06)' }}>
+                  <Card.Body style={{ padding: '12px 16px' }}>
+                    <small style={{ color: 'var(--pf-orange)' }}>
                       ⚠️ Belum ada parkir dipilih.{' '}
-                      <Button variant="link" className="p-0 text-accent" style={{ fontSize:13 }} onClick={() => navigate('/parking')}>
+                      <Button variant="link" className="p-0 text-accent" style={{ fontSize: 13 }}
+                        onClick={() => navigate('/parking')}>
                         Cari parkir
                       </Button>
                     </small>
@@ -174,11 +129,11 @@ export default function BookingPage() {
               )}
 
               <Button
-                className="btn-pf-primary btn w-100"
+                className="btn-pf-primary btn w-100 py-3"
                 onClick={next}
                 disabled={!parking}
               >
-                Lanjutkan →
+                Lanjutkan ke Konfirmasi →
               </Button>
             </Col>
           </Row>
@@ -190,40 +145,23 @@ export default function BookingPage() {
             <Col lg={7}>
               <Card>
                 <Card.Body className="p-4">
-                  <h5 className="mb-4" style={{ color:'var(--pf-text)' }}>Konfirmasi Booking</h5>
+                  <h5 className="mb-4" style={{ color: 'var(--pf-text)' }}>Konfirmasi Booking</h5>
                   {[
-                    ['Nama',       form.name],
-                    ['Kendaraan',  `${form.vehicle} – ${form.plate}`],
-                    ['No. HP',     form.phone],
-                    ['Gedung',     parking?.name],
-                    ['Slot',       `${parking?.floor} / ${parking?.slot}`],
-                    ['Durasi',     `${form.duration} jam`],
-                    ['Total',      `Rp ${totalPrice.toLocaleString('id-ID')}`],
-                  ].map(([k,v]) => (
-                    <div key={k} className="d-flex justify-content-between py-2 border-bottom border-pf">
-                      <span style={{ color:'var(--pf-text2)', fontSize:14 }}>{k}</span>
-                      <span style={{ color:'var(--pf-text)', fontWeight:600, fontSize:14, textAlign:'right', maxWidth:280 }}>{v}</span>
+                    ['Nama',      form.name],
+                    ['Plat',      form.plate],
+                    ['No. HP',    form.phone],
+                    ['Gedung',    parking?.name],
+                    ['Slot',      `${parking?.floor} / ${parking?.slot}`],
+                  ].map(([k, v]) => (
+                    <div key={k} className="d-flex justify-content-between py-2 border-bottom border-pf gap-3">
+                      <span style={{ color: 'var(--pf-text2)', fontSize: 14 }}>{k}</span>
+                      <span style={{ color: 'var(--pf-text)', fontWeight: 600, fontSize: 14, textAlign: 'right', maxWidth: 300 }}>{v}</span>
                     </div>
                   ))}
 
-                  <div className="mt-4">
-                    <p style={{ fontWeight:600, color:'var(--pf-text)', marginBottom:12 }}>Metode Pembayaran</p>
-                    <div className="d-flex flex-wrap gap-2">
-                      {['GoPay','OVO','Dana','Kartu Kredit'].map(m => (
-                        <Button
-                          key={m}
-                          className={`${payMethod === m ? 'btn-pf-primary' : 'btn-pf-ghost'} btn btn-sm`}
-                          onClick={() => setPayMethod(m)}
-                        >
-                          {m}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-
                   <div className="d-flex gap-3 justify-content-end mt-4">
                     <Button className="btn-pf-ghost btn" onClick={() => setStep(0)}>← Kembali</Button>
-                    <Button className="btn-pf-primary btn" onClick={next}>Konfirmasi & Bayar</Button>
+                    <Button className="btn-pf-primary btn" onClick={next}>Konfirmasi Booking</Button>
                   </div>
                 </Card.Body>
               </Card>
@@ -237,31 +175,36 @@ export default function BookingPage() {
             <Col lg={6}>
               <Card className="text-center shadow-glow">
                 <Card.Body className="p-5">
-                  <div style={{ fontSize:64, marginBottom:16 }}>✅</div>
-                  <h3 style={{ color:'var(--pf-text)' }}>Booking Berhasil!</h3>
+                  <div style={{ fontSize: 64, marginBottom: 16 }}>✅</div>
+                  <h3 style={{ color: 'var(--pf-text)' }}>Booking Berhasil!</h3>
                   <p className="mb-4">Tiket parkir Anda telah dikonfirmasi. Simpan kode berikut.</p>
 
                   <div className="ticket-box mb-4">
                     <div className="d-flex justify-content-between align-items-center mb-3">
-                      <span style={{ fontSize:16, fontWeight:800, color:'var(--pf-accent)' }}>🅿 ParkFinder</span>
+                      <img
+                        src="https://storage.googleapis.com/parkfinderbucket/foto/logo.png"
+                        alt="ParkFinder"
+                        style={{ height: 28, width: 'auto', objectFit: 'contain' }}
+                        onError={e => { e.target.style.display='none' }}
+                      />
                       <Badge className="badge-pf-green px-2 py-1">Aktif</Badge>
                     </div>
                     <div className="ticket-code">{ticketCode}</div>
                     <div className="pf-divider" />
                     {[
-                      ['Nama',    form.name],
-                      ['Slot',    `${parking?.floor} – ${parking?.slot}`],
-                      ['Durasi',  `${form.duration} jam`],
-                      ['Bayar',   payMethod],
-                    ].map(([k,v]) => (
+                      ['Nama',   form.name],
+                      ['Plat',   form.plate],
+                      ['Gedung', parking?.name],
+                      ['Slot',   `${parking?.floor} – ${parking?.slot}`],
+                    ].map(([k, v]) => (
                       <div key={k} className="d-flex justify-content-between mb-2">
-                        <small style={{ color:'var(--pf-text2)' }}>{k}</small>
-                        <small style={{ color:'var(--pf-text)', fontWeight:600 }}>{v}</small>
+                        <small style={{ color: 'var(--pf-text2)' }}>{k}</small>
+                        <small style={{ color: 'var(--pf-text)', fontWeight: 600, textAlign: 'right', maxWidth: 200 }}>{v}</small>
                       </div>
                     ))}
                     <div className="qr-box mt-3">
-                      <span style={{ fontSize:48 }}>📱</span>
-                      <p style={{ margin:0, fontSize:13, color:'var(--pf-text3)' }}>Scan QR saat tiba di lokasi</p>
+                      <span style={{ fontSize: 48 }}>📱</span>
+                      <p style={{ margin: 0, fontSize: 13, color: 'var(--pf-text3)' }}>Scan QR ini saat tiba di lokasi</p>
                     </div>
                   </div>
 

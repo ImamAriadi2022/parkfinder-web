@@ -4,12 +4,12 @@ import { Container, Row, Col, Card, Badge, Button, InputGroup, Form, ProgressBar
 import './ParkingPage.css'
 
 const PARKINGS = [
-  { id:1, name:'Jurusan Teknik Elektro Universitas Lampung', occupancy:78, slots:'4/5 Kosong',       distance:'0.3 km', price:'Rp 3.000/jam', price_num:3000,  tag:'Tersedia', tagClass:'green', address:'Jl. Prof. Soemantri Brojonegoro, Bandar Lampung' },
-  { id:2, name:'Mall Boemi Kedaton',                          occupancy:81, slots:'635/1384 Kosong', distance:'1.2 km', price:'Rp 5.000/jam', price_num:5000,  tag:'Ramai',    tagClass:'orange',address:'Jl. Z.A. Pagar Alam, Bandar Lampung' },
-  { id:3, name:'Lampung City Mall',                           occupancy:81, slots:'635/1384 Kosong', distance:'2.1 km', price:'Rp 5.000/jam', price_num:5000,  tag:'Ramai',    tagClass:'orange',address:'Jl. Hayam Wuruk, Bandar Lampung' },
-  { id:4, name:'Pasar Bambu Kuning',                          occupancy:45, slots:'120/220 Kosong',  distance:'0.8 km', price:'Rp 2.000/jam', price_num:2000,  tag:'Tersedia', tagClass:'green', address:'Jl. Imam Bonjol, Bandar Lampung' },
-  { id:5, name:'RSUD Abdul Moeloek',                          occupancy:92, slots:'18/220 Kosong',   distance:'3.2 km', price:'Rp 3.000/jam', price_num:3000,  tag:'Penuh',    tagClass:'red',   address:'Jl. Dr. Rivai, Bandar Lampung' },
-  { id:6, name:'Stasiun Tanjungkarang',                       occupancy:55, slots:'90/200 Kosong',   distance:'1.8 km', price:'Rp 4.000/jam', price_num:4000,  tag:'Tersedia', tagClass:'green', address:'Jl. Kepodang, Bandar Lampung' },
+  { id:1, name:'Jurusan Teknik Elektro Universitas Lampung', occupancy:78, slots:'4/5 Kosong',       distance:'0.3 km', tag:'Tersedia', tagClass:'green',  address:'Jl. Prof. Soemantri Brojonegoro, Bandar Lampung' },
+  { id:2, name:'Mall Boemi Kedaton',                          occupancy:81, slots:'635/1384 Kosong', distance:'1.2 km', tag:'Ramai',    tagClass:'orange', address:'Jl. Z.A. Pagar Alam, Bandar Lampung' },
+  { id:3, name:'Lampung City Mall',                           occupancy:81, slots:'635/1384 Kosong', distance:'2.1 km', tag:'Ramai',    tagClass:'orange', address:'Jl. Hayam Wuruk, Bandar Lampung' },
+  { id:4, name:'Pasar Bambu Kuning',                          occupancy:45, slots:'120/220 Kosong',  distance:'0.8 km', tag:'Tersedia', tagClass:'green',  address:'Jl. Imam Bonjol, Bandar Lampung' },
+  { id:5, name:'RSUD Abdul Moeloek',                          occupancy:92, slots:'18/220 Kosong',   distance:'3.2 km', tag:'Penuh',    tagClass:'red',    address:'Jl. Dr. Rivai, Bandar Lampung' },
+  { id:6, name:'Stasiun Tanjungkarang',                       occupancy:55, slots:'90/200 Kosong',   distance:'1.8 km', tag:'Tersedia', tagClass:'green',  address:'Jl. Kepodang, Bandar Lampung' },
 ]
 
 const FLOORS = [
@@ -79,7 +79,7 @@ export default function ParkingPage() {
                     <ProgressBar now={p.occupancy} variant={progressVariant(p.occupancy)} style={{ height: 5, margin: '8px 0' }} />
                     <div className="d-flex justify-content-between">
                       <small style={{ color: 'var(--pf-text2)' }}>{p.slots}</small>
-                      <small style={{ color: 'var(--pf-text2)' }}>{p.distance} · {p.price}</small>
+                      <small style={{ color: 'var(--pf-text2)' }}>{p.distance}</small>
                     </div>
                   </div>
                 ))}
