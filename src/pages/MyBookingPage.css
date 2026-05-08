@@ -1,0 +1,43 @@
+/* Stats cards */
+.stat-card {
+  border: 1.5px solid var(--pf-border); border-radius: 12px;
+  padding: 16px 12px; text-align: center; transition: border-color 0.2s;
+}
+.stat-card-value { font-size: 32px; font-weight: 900; line-height: 1; margin-bottom: 4px; }
+.stat-card-label { font-size: 13px; color: var(--pf-text2); font-weight: 500; }
+
+/* Booking card states */
+.booking-card { transition: border-color 0.2s, box-shadow 0.2s; }
+.booking-card-active { border-color: var(--pf-border2) !important; box-shadow: 0 0 16px rgba(0,210,255,0.1) !important; }
+.booking-card-expired { opacity: 0.6; }
+
+/* Ticket code */
+.booking-code {
+  font-family: monospace; font-size: 16px; font-weight: 800;
+  letter-spacing: 2px; color: var(--pf-text); margin-bottom: 4px;
+  background: var(--pf-bg); border: 1px dashed var(--pf-border2);
+  border-radius: 8px; padding: 8px 12px; display: inline-block;
+}
+.booking-code-expired {
+  color: var(--pf-text3) !important;
+  border-color: var(--pf-border) !important;
+  text-decoration: line-through;
+}
+
+/* Expired badge */
+.badge-expired {
+  background: rgba(239,83,80,0.12) !important;
+  color: var(--pf-red) !important;
+  border: 1px solid rgba(239,83,80,0.25);
+}
+
+/* Detail grid */
+.booking-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.bd-item { display: flex; flex-direction: column; gap: 2px; }
+.bd-key  { font-size: 11px; color: var(--pf-text3); font-weight: 600; letter-spacing: 0.5px; }
+.bd-val  { font-size: 13px; color: var(--pf-text); font-weight: 600; }
+
+@media (max-width: 576px) {
+  .booking-detail-grid { grid-template-columns: 1fr; }
+  .stat-card-value { font-size: 24px; }
+}

@@ -1,0 +1,100 @@
+/* Stepper — reuse from BookingPage.css */
+.pf-stepper { display: flex; align-items: center; }
+.pf-step { display: flex; align-items: center; flex: 1; gap: 0; }
+.pf-step-circle {
+  width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0; z-index: 1;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700;
+  background: var(--pf-card2); border: 2px solid var(--pf-border); color: var(--pf-text3);
+  transition: all 0.3s;
+}
+.pf-step.active .pf-step-circle { background: var(--pf-accent-glow); border-color: var(--pf-accent); color: var(--pf-accent); }
+.pf-step.done .pf-step-circle   { background: var(--pf-green); border-color: var(--pf-green); color: #fff; }
+.pf-step-label { font-size: 13px; color: var(--pf-text3); margin-left: 10px; white-space: nowrap; font-weight: 500; }
+.pf-step.active .pf-step-label  { color: var(--pf-accent); }
+.pf-step.done .pf-step-label    { color: var(--pf-green); }
+.pf-step-line { flex: 1; height: 2px; background: var(--pf-border); margin: 0 12px; transition: background 0.3s; }
+.pf-step.done .pf-step-line { background: var(--pf-green); }
+
+/* Active ticket card */
+.checkout-ticket-card {
+  border-color: var(--pf-border2) !important;
+  box-shadow: 0 0 20px rgba(0,210,255,0.12) !important;
+}
+.checkout-code {
+  font-size: 24px; font-weight: 900; letter-spacing: 3px; font-family: monospace;
+  color: var(--pf-text); background: var(--pf-bg); border: 1px dashed var(--pf-border2);
+  border-radius: 10px; padding: 14px; text-align: center; margin: 12px 0;
+}
+.checkout-info-cell {
+  background: var(--pf-bg); border-radius: 10px; padding: 12px;
+  border: 1px solid var(--pf-border);
+}
+.checkout-info-key { font-size: 11px; color: var(--pf-text3); font-weight: 600; letter-spacing: 0.5px; margin-bottom: 4px; }
+.checkout-info-val { font-size: 14px; color: var(--pf-text); font-weight: 600; }
+.pf-divider { height: 1px; background: var(--pf-border); margin: 14px 0; }
+
+/* Warning alert */
+.checkout-warning {
+  background: rgba(255,167,38,0.07) !important;
+  border: 1.5px solid rgba(255,167,38,0.3) !important;
+  border-radius: 14px !important; padding: 16px 20px !important;
+}
+
+/* Checklist icon */
+.checkout-check-icon {
+  width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+  background: rgba(76,175,80,0.15); border: 1.5px solid var(--pf-green);
+  color: var(--pf-green); display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700;
+}
+
+/* Destroyed ticket */
+.destroyed-ticket-container { position: relative; display: flex; justify-content: center; }
+.destroyed-ticket {
+  width: 100%; max-width: 360px; position: relative;
+  background: var(--pf-card2); border: 1.5px solid rgba(239,83,80,0.25);
+  border-radius: 14px; padding: 24px; overflow: hidden;
+  filter: grayscale(0.6) opacity(0.75);
+}
+/* Diagonal stripe overlay */
+.destroyed-stripe {
+  position: absolute; inset: 0; border-radius: 14px; pointer-events: none;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 12px,
+    rgba(239,83,80,0.08) 12px,
+    rgba(239,83,80,0.08) 14px
+  );
+}
+.destroyed-code {
+  font-size: 20px; font-weight: 900; letter-spacing: 3px; font-family: monospace;
+  color: var(--pf-text3); background: var(--pf-bg); border: 1px dashed var(--pf-border);
+  border-radius: 10px; padding: 12px; text-align: center; margin: 12px 0; opacity: 0.6;
+}
+/* EXPIRED stamp */
+.destroyed-stamp {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%) rotate(-15deg);
+  font-size: 40px; font-weight: 900; letter-spacing: 4px; font-family: 'Inter', monospace;
+  color: rgba(239,83,80,0.7); border: 4px solid rgba(239,83,80,0.5);
+  border-radius: 8px; padding: 4px 16px; pointer-events: none;
+  animation: stampIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes stampIn {
+  from { transform: translate(-50%,-50%) rotate(-15deg) scale(2.5); opacity: 0; }
+  to   { transform: translate(-50%,-50%) rotate(-15deg) scale(1);   opacity: 1; }
+}
+
+/* Spinner */
+.mini-spinner {
+  width: 16px; height: 16px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff;
+  display: inline-block; animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 576px) {
+  .pf-step-label { display: none; }
+  .destroyed-stamp { font-size: 28px; letter-spacing: 2px; }
+}

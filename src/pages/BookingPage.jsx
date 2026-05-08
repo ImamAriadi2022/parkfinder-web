@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { Container, Row, Col, Card, Badge, Button, Form } from 'react-bootstrap'
+import { saveBooking } from '../utils/bookingStore'
 import './BookingPage.css'
 
 const STEPS = ['Detail Booking', 'Konfirmasi', 'Selesai']
@@ -14,7 +15,8 @@ export default function BookingPage() {
   const [form, setForm]   = useState({ name: '', plate: '', phone: '' })
   const [errors, setErrors] = useState({})
 
-  const ticketCode = `PKF-${Date.now().toString(36).toUpperCase().slice(-8)}`
+  const ticketRef = useRef(`PKF-${Date.now().toString(36).toUpperCase().slice(-8)}`)
+  const ticketCode = ticketRef.current
 
   const validate = () => {
     const e = {}
@@ -32,7 +34,20 @@ export default function BookingPage() {
 
   const next = () => {
     if (step === 0 && !validate()) return
-    if (step < STEPS.length - 1) setStep(s => s + 1)
+    const nextStep = step + 1
+    if (nextStep <= STEPS.length - 1) {
+      setStep(nextStep)
+      // Simpan booking ke localStorage saat konfirmasi selesai
+      if (nextStep === 2) {
+        saveBooking({
+          ticketCode,
+          name: form.name,
+          plate: form.plate,
+          phone: form.phone,
+          parking,
+        })
+      }
+    }
   }
 
   return (
@@ -212,19 +227,27 @@ export default function BookingPage() {
                     <Button
                       className="btn-pf-outline btn"
                       onClick={() => navigate('/swap', {
-                        state: {
-                          ticketCode,
-                          name: form.name,
-                          plate: form.plate,
-                          phone: form.phone,
-                          parking,
-                        }
+                        state: { ticketCode, name: form.name, plate: form.plate, phone: form.phone, parking }
                       })}
                     >
                       🔄 Tukar Slot
                     </Button>
+                    <Button
+                      className="btn btn-danger-pf"
+                      onClick={() => navigate('/checkout', {
+                        state: { ticketCode, name: form.name, plate: form.plate, phone: form.phone, parking }
+                      })}
+                    >
+                      🚗 Keluar Parkir
+                    </Button>
+                    <Button
+                      className="btn-pf-primary btn"
+                      onClick={() => navigate('/my-booking')}
+                    >
+                      📋 Lihat Parkiran Aktif
+                    </Button>
                     <Button className="btn-pf-ghost btn" onClick={() => navigate('/parking')}>Booking Lagi</Button>
-                    <Button className="btn-pf-primary btn" onClick={() => navigate('/')}>Ke Beranda</Button>
+                    <Button className="btn-pf-ghost btn" onClick={() => navigate('/')}>Ke Beranda</Button>
                   </div>
                 </Card.Body>
               </Card>

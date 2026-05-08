@@ -5,6 +5,8 @@ import ScanPage from './pages/ScanPage'
 import ParkingPage from './pages/ParkingPage'
 import BookingPage from './pages/BookingPage'
 import SwapPage from './pages/SwapPage'
+import CheckoutPage from './pages/CheckoutPage'
+import MyBookingPage from './pages/MyBookingPage'
 import './index.css'
 
 export default function App() {
@@ -16,7 +18,9 @@ export default function App() {
         <Route path="/scan"    element={<ScanPage />} />
         <Route path="/parking" element={<ParkingPage />} />
         <Route path="/booking" element={<BookingPage />} />
-        <Route path="/swap"    element={<SwapPage />} />
+        <Route path="/swap"     element={<SwapPage />} />
+        <Route path="/checkout"   element={<CheckoutPage />} />
+        <Route path="/my-booking" element={<MyBookingPage />} />
         <Route path="*"        element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

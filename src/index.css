@@ -77,6 +77,12 @@ a { text-decoration: none; }
   border: 1.5px solid var(--pf-border);
 }
 .btn-pf-ghost:hover { border-color: var(--pf-border2); color: var(--pf-text); }
+.btn-danger-pf {
+  background: rgba(239,83,80,0.12); color: var(--pf-red);
+  border: 1.5px solid rgba(239,83,80,0.4); font-weight: 600;
+  transition: all 0.2s;
+}
+.btn-danger-pf:hover { background: rgba(239,83,80,0.22); border-color: var(--pf-red); color: var(--pf-red); }
 
 /* ── Badge overrides ── */
 .badge-pf-green { background: rgba(76,175,80,0.15) !important; color: var(--pf-green) !important; }
