@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import './Navbar.css'
+import { useEffect, useState } from 'react'
+import '../styles/components/navbar.css'
 
 const CDN = 'https://storage.googleapis.com/parkfinderbucket'
 

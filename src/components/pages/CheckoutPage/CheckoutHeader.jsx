@@ -1,0 +1,24 @@
+import { Button } from 'react-bootstrap'
+
+export default function CheckoutHeader({ step, onBack }) {
+  return (
+    <div className="d-flex align-items-center gap-3 mb-4">
+      {step === 0 && (
+        <Button
+          variant="link"
+          className="p-0 text-muted-pf"
+          style={{ fontSize: 20, textDecoration: 'none' }}
+          onClick={onBack}
+        >
+          ←
+        </Button>
+      )}
+      <div>
+        <h1 className="fw-bold mb-0" style={{ color: 'var(--pf-text)', fontSize: 28 }}>Keluar Parkir</h1>
+        <p className="mb-0" style={{ fontSize: 14 }}>
+          {step === 0 ? 'Konfirmasi untuk menonaktifkan tiket Anda' : 'Tiket parkir telah dinonaktifkan'}
+        </p>
+      </div>
+    </div>
+  )
+}

@@ -1,13 +1,13 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import AppNavbar from './components/AppNavbar'
-import LandingPage from './pages/LandingPage'
-import ScanPage from './pages/ScanPage'
-import ParkingPage from './pages/ParkingPage'
 import BookingPage from './pages/BookingPage'
-import SwapPage from './pages/SwapPage'
 import CheckoutPage from './pages/CheckoutPage'
+import LandingPage from './pages/LandingPage'
 import MyBookingPage from './pages/MyBookingPage'
-import './index.css'
+import ParkingPage from './pages/ParkingPage'
+import ScanPage from './pages/ScanPage'
+import SwapPage from './pages/SwapPage'
+import './styles/index.css'
 
 export default function App() {
   return (
