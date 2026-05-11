@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import LandingDownloadCta from '../components/pages/LandingPage/LandingDownloadCta'
 import LandingFeatures from '../components/pages/LandingPage/LandingFeatures'
@@ -6,6 +7,7 @@ import LandingHero from '../components/pages/LandingPage/LandingHero'
 import LandingParkings from '../components/pages/LandingPage/LandingParkings'
 import LandingStats from '../components/pages/LandingPage/LandingStats'
 import LandingSteps from '../components/pages/LandingPage/LandingSteps'
+import { GuestService } from '../services/api'
 import '../styles/pages/LandingPage.css'
 
 const CDN = 'https://storage.googleapis.com/parkfinderbucket'
@@ -26,11 +28,7 @@ const FEATURES = [
   { icon: '🔒', title: 'Slot Terjamin Aman', desc: 'Slot yang sudah di-booking tidak bisa diambil orang lain.' },
 ]
 
-const PARKINGS = [
-  { name: 'Jurusan Teknik Elektro Universitas Lampung', occupancy: 78, slots: '4/5 Kosong', distance: '0.3 km', tag: 'Tersedia', tagClass: 'green', variant: 'info' },
-  { name: 'Mall Boemi Kedaton', occupancy: 81, slots: '635/1384 Kosong', distance: '1.2 km', tag: 'Ramai', tagClass: 'orange', variant: 'warning' },
-  { name: 'Lampung City Mall', occupancy: 81, slots: '635/1384 Kosong', distance: '2.1 km', tag: 'Ramai', tagClass: 'orange', variant: 'warning' },
-]
+
 
 const STEPS = [
   { num: '01', img: `${CDN}/foto/tutor1.png`, title: 'Cari Gedung Parkir', desc: 'Gunakan pencarian untuk menemukan gedung parkir terdekat dan lihat slot secara real-time.' },
@@ -40,6 +38,27 @@ const STEPS = [
 
 export default function LandingPage() {
   const navigate = useNavigate()
+  const [parkings, setParkings] = useState([])
+
+  useEffect(() => {
+    GuestService.getAllAreas()
+      .then(res => {
+        if (res.success && res.data) {
+          const formatted = res.data.slice(0, 3).map(p => ({
+            id: p.id,
+            name: p.name,
+            occupancy: p.totalSlots > 0 ? Math.round(((p.totalSlots - p.availableSlots) / p.totalSlots) * 100) : 0,
+            slots: `${p.availableSlots}/${p.totalSlots} Kosong`,
+            distance: '1.2 km', // Mock distance
+            tag: p.availableSlots > 0 ? (p.availableSlots < p.totalSlots * 0.2 ? 'Ramai' : 'Tersedia') : 'Penuh',
+            tagClass: p.availableSlots > 0 ? (p.availableSlots < p.totalSlots * 0.2 ? 'orange' : 'green') : 'red',
+            variant: p.availableSlots > 0 ? (p.availableSlots < p.totalSlots * 0.2 ? 'warning' : 'info') : 'danger',
+          }))
+          setParkings(formatted)
+        }
+      })
+      .catch(err => console.error("Error fetching areas", err))
+  }, [])
 
   return (
     <div className="landing">
@@ -50,7 +69,7 @@ export default function LandingPage() {
       />
       <LandingStats stats={STATS} />
       <LandingParkings
-        parkings={PARKINGS}
+        parkings={parkings}
         onBooking={(parking) => navigate('/scan', { state: { redirect: '/booking', parking } })}
         onSeeAll={() => navigate('/parking')}
       />

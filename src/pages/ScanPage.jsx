@@ -1,12 +1,11 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Col, Container, Row } from 'react-bootstrap'
+import { Html5QrcodeScanner } from 'html5-qrcode'
 import ScanBackground from '../components/pages/ScanPage/ScanBackground'
-import ScanDemoActions from '../components/pages/ScanPage/ScanDemoActions'
 import ScanFooterBack from '../components/pages/ScanPage/ScanFooterBack'
-import ScanFrame from '../components/pages/ScanPage/ScanFrame'
 import ScanHeader from '../components/pages/ScanPage/ScanHeader'
-import ScanManualInput from '../components/pages/ScanPage/ScanManualInput'
+import { GuestService } from '../services/api'
 import '../styles/pages/ScanPage.css'
 
 const CDN = 'https://storage.googleapis.com/parkfinderbucket'
@@ -17,52 +16,60 @@ export default function ScanPage() {
   const redirect = location.state?.redirect || '/parking'
   const parkingData = location.state?.parking || null
 
-  const [code, setCode] = useState('')
   const [scanning, setScanning] = useState(false)
   const [scanned, setScanned] = useState(false)
   const [error, setError] = useState('')
-  const [linePos, setLinePos] = useState(0)
-  const animRef = useRef(null)
-  const dirRef = useRef(1)
 
   useEffect(() => {
-    const tick = () => {
-      setLinePos(prev => {
-        const next = prev + dirRef.current * 1.2
-        if (next >= 100) { dirRef.current = -1; return 100 }
-        if (next <= 0) { dirRef.current = 1; return 0 }
-        return next
-      })
-      animRef.current = requestAnimationFrame(tick)
+    // Initialize the scanner
+    const scanner = new Html5QrcodeScanner("qr-reader", { 
+      fps: 10, 
+      qrbox: { width: 250, height: 250 },
+      aspectRatio: 1.0,
+      showTorchButtonIfSupported: true,
+    }, false);
+
+    const onScanSuccess = async (decodedText) => {
+      if (scanning || scanned) return; // Prevent multiple scans at once
+
+      scanner.pause()
+      setError('')
+      setScanning(true)
+      
+      try {
+        const result = await GuestService.verifyTicket(decodedText.trim())
+        setScanning(false)
+        setScanned(true)
+        
+        scanner.clear() // Clean up the scanner UI
+        
+        // Redirect on success
+        setTimeout(() => {
+          navigate(redirect, { state: { ...parkingData, apiResult: result } })
+        }, 1500)
+      } catch (err) {
+        setScanning(false)
+        setError(err.message || 'Gagal verifikasi tiket')
+        // Resume scanning after a short delay so user can try again
+        setTimeout(() => { 
+          if(scanner.getState() === 2) { // if paused
+            scanner.resume() 
+          }
+        }, 2000)
+      }
     }
-    animRef.current = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(animRef.current)
-  }, [])
 
-  const handleScan = () => {
-    if (!code.trim()) {
-      setError('Masukkan kode tiket terlebih dahulu')
-      return
+    const onScanError = (errorMessage) => {
+      // This runs continuously as it tries to scan, so ignore background errors
     }
-    setError('')
-    setScanning(true)
-    setTimeout(() => {
-      setScanning(false)
-      setScanned(true)
-      setTimeout(() => {
-        navigate(redirect, { state: parkingData })
-      }, 1600)
-    }, 1800)
-  }
 
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter') handleScan()
-  }
+    scanner.render(onScanSuccess, onScanError);
 
-  const handleDemo = () => {
-    setCode('PKF-DEMO1234')
-    setTimeout(handleScan, 100)
-  }
+    // Cleanup scanner on unmount
+    return () => {
+      scanner.clear().catch(err => console.error("Failed to clear scanner", err));
+    };
+  }, [navigate, redirect, parkingData, scanning, scanned]);
 
   return (
     <div className="scan-page" style={{ paddingTop: 'var(--nav-h)', minHeight: '100vh' }}>
@@ -71,25 +78,29 @@ export default function ScanPage() {
         <Row className="justify-content-center">
           <Col md={10} lg={8} xl={6}>
             <ScanHeader cdn={CDN} />
-            <ScanFrame scanning={scanning} scanned={scanned} linePos={linePos} />
 
-            {!scanned && (
-              <ScanManualInput
-                code={code}
-                scanning={scanning}
-                error={error}
-                onCodeChange={(event) => { setCode(event.target.value.toUpperCase()); setError('') }}
-                onKeyDown={handleKeyDown}
-                onScan={handleScan}
-              />
-            )}
-
-            {!scanned && !scanning && (
-              <ScanDemoActions
-                onBooking={() => navigate('/parking')}
-                onDemo={handleDemo}
-              />
-            )}
+            <div className="scan-container-glass animate-fade-up delay-1">
+              {/* QR Reader DOM Element */}
+              <div id="qr-reader" style={{ width: '100%', borderRadius: 16, overflow: 'hidden' }}></div>
+              
+              {/* Status Messages */}
+              {error && (
+                <div className="text-danger text-center mt-3 animate-fade-up" style={{ fontSize: 15, fontWeight: 500 }}>
+                  ⚠️ {error}
+                </div>
+              )}
+              {scanning && (
+                <div className="text-info text-center mt-3 animate-fade-up" style={{ fontSize: 15, fontWeight: 500 }}>
+                  <div className="spinner-border spinner-border-sm me-2" role="status"></div>
+                  Memverifikasi tiket...
+                </div>
+              )}
+              {scanned && (
+                <div className="text-success text-center mt-3 animate-fade-up" style={{ fontSize: 18, fontWeight: 'bold' }}>
+                  ✓ Tiket Terverifikasi!
+                </div>
+              )}
+            </div>
 
             <ScanFooterBack onBack={() => navigate('/')} />
           </Col>

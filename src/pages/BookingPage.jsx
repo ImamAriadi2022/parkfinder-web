@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Container } from 'react-bootstrap'
 import { saveBooking } from '../utils/bookingStore'
+import { GuestService } from '../services/api'
 import BookingConfirmStep from '../components/pages/BookingPage/BookingConfirmStep'
 import BookingFormStep from '../components/pages/BookingPage/BookingFormStep'
 import BookingHeader from '../components/pages/BookingPage/BookingHeader'
@@ -37,20 +38,39 @@ export default function BookingPage() {
     if (errors[key]) setErrors(prev => ({ ...prev, [key]: undefined }))
   }
 
-  const nextStep = () => {
+  const nextStep = async () => {
     if (step === 0 && !validate()) return
-    const target = step + 1
-    if (target <= STEPS.length - 1) {
-      setStep(target)
-      if (target === 2) {
+    
+    if (step === 1) {
+      try {
+        const payload = {
+          slotId: parking?.slotId || 'UNKNOWN_SLOT',
+          ticketId: ticketCode,
+          name: form.name,
+          plateNumber: form.plate
+        }
+        const res = await GuestService.createReservation(payload)
+        
         saveBooking({
           ticketCode,
+          reservationId: res.data?.id,
           name: form.name,
           plate: form.plate,
           phone: form.phone,
           parking,
         })
+        
+        setStep(2)
+      } catch (err) {
+        console.error("Gagal booking:", err)
+        alert(err.message || 'Gagal membuat booking')
       }
+      return
+    }
+
+    const target = step + 1
+    if (target <= STEPS.length - 1) {
+      setStep(target)
     }
   }
 

@@ -1,6 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Button, Container } from 'react-bootstrap'
+import { GuestService } from '../services/api'
+import { updateBooking } from '../utils/bookingStore'
 import SwapConfirmStep from '../components/pages/SwapPage/SwapConfirmStep'
 import SwapCurrentAlert from '../components/pages/SwapPage/SwapCurrentAlert'
 import SwapHeader from '../components/pages/SwapPage/SwapHeader'
@@ -9,20 +11,6 @@ import SwapStepper from '../components/pages/SwapPage/SwapStepper'
 import SwapSuccessStep from '../components/pages/SwapPage/SwapSuccessStep'
 import '../styles/pages/SwapPage.css'
 
-const PARKINGS = [
-  { id: 1, name: 'Jurusan Teknik Elektro Universitas Lampung', occupancy: 78, slots: '4/5 Kosong', distance: '0.3 km', tag: 'Tersedia', tagClass: 'green', address: 'Jl. Prof. Soemantri Brojonegoro, Bandar Lampung' },
-  { id: 2, name: 'Mall Boemi Kedaton', occupancy: 81, slots: '635/1384 Kosong', distance: '1.2 km', tag: 'Ramai', tagClass: 'orange', address: 'Jl. Z.A. Pagar Alam, Bandar Lampung' },
-  { id: 3, name: 'Lampung City Mall', occupancy: 81, slots: '635/1384 Kosong', distance: '2.1 km', tag: 'Ramai', tagClass: 'orange', address: 'Jl. Hayam Wuruk, Bandar Lampung' },
-  { id: 4, name: 'Pasar Bambu Kuning', occupancy: 45, slots: '120/220 Kosong', distance: '0.8 km', tag: 'Tersedia', tagClass: 'green', address: 'Jl. Imam Bonjol, Bandar Lampung' },
-  { id: 5, name: 'Stasiun Tanjungkarang', occupancy: 55, slots: '90/200 Kosong', distance: '1.8 km', tag: 'Tersedia', tagClass: 'green', address: 'Jl. Kepodang, Bandar Lampung' },
-]
-
-const FLOORS = [
-  { id: 'B1', slots: ['B1-01', 'B1-02', 'B1-03', 'B1-04', 'B1-05', 'B1-06'], available: [true, true, false, true, false, true] },
-  { id: 'L1', slots: ['A01', 'A02', 'A03', 'A04', 'A05', 'A06', 'A07', 'A08'], available: [false, true, false, false, true, true, false, true] },
-  { id: 'L2', slots: ['B01', 'B02', 'B03', 'B04', 'B05', 'B06'], available: [true, false, true, true, false, true] },
-]
-
 const SWAP_STEPS = ['Pilih Slot Baru', 'Konfirmasi Tukar', 'Selesai']
 
 export default function SwapPage() {
@@ -30,14 +18,68 @@ export default function SwapPage() {
   const location = useLocation()
   const booking = location.state
 
-  const allowedParkings = booking?.parking ? PARKINGS.filter(p => p.name === booking.parking.name) : PARKINGS
-
   const [step, setStep] = useState(0)
-  const [selectedParking, setSelectedParking] = useState(allowedParkings.length === 1 ? allowedParkings[0] : null)
-  const [floor, setFloor] = useState('L1')
+  
+  const [parkings, setParkings] = useState([])
+  const [selectedParking, setSelectedParking] = useState(null)
+  
+  const [floors, setFloors] = useState([])
+  const [floor, setFloor] = useState('')
   const [newSlot, setNewSlot] = useState(null)
+  
   const [swapping, setSwapping] = useState(false)
   const [newTicketCode] = useState(`PKF-SW-${Date.now().toString(36).toUpperCase().slice(-6)}`)
+
+  // Fetch only the current parking area for swap to enforce same-building only
+  useEffect(() => {
+    if (booking?.parking?.id) {
+      GuestService.getAreaById(booking.parking.id)
+        .then(res => {
+          if (res.success && res.data) {
+            const p = res.data;
+            const formatted = {
+              id: p.id,
+              name: p.name,
+              occupancy: p.totalSlots > 0 ? Math.round(((p.totalSlots - p.availableSlots) / p.totalSlots) * 100) : 0,
+              slots: `${p.availableSlots}/${p.totalSlots} Kosong`,
+              distance: '0.0 km',
+              tag: p.availableSlots > 0 ? (p.availableSlots < p.totalSlots * 0.2 ? 'Ramai' : 'Tersedia') : 'Penuh',
+              tagClass: p.availableSlots > 0 ? (p.availableSlots < p.totalSlots * 0.2 ? 'orange' : 'green') : 'red',
+              address: p.address || 'Bandar Lampung'
+            };
+            setParkings([formatted])
+            setSelectedParking(formatted)
+          }
+        })
+        .catch(err => console.error("Error fetching area for swap", err))
+    }
+  }, [booking])
+
+  // Fetch slots for selected parking
+  useEffect(() => {
+    if (selectedParking?.id) {
+      GuestService.getAllSlotsInArea(selectedParking.id)
+        .then(res => {
+          if (res.success && res.data) {
+            const floorGroups = {}
+            res.data.forEach(slot => {
+              const f = `L${slot.floor}`
+              if (!floorGroups[f]) floorGroups[f] = { id: f, slots: [], available: [], rawSlots: [] }
+              floorGroups[f].slots.push(slot.slotName)
+              // Only consider available if it's not the user's current slot
+              floorGroups[f].available.push(slot.appStatus === 'available')
+              floorGroups[f].rawSlots.push(slot)
+            })
+            const floorArr = Object.values(floorGroups).sort((a,b) => a.id.localeCompare(b.id))
+            setFloors(floorArr)
+            if (floorArr.length > 0) {
+              setFloor(floorArr[0].id)
+            }
+          }
+        })
+        .catch(err => console.error("Error fetching slots", err))
+    }
+  }, [selectedParking])
 
   if (!booking) {
     return (
@@ -54,12 +96,28 @@ export default function SwapPage() {
     )
   }
 
-  const handleConfirmSwap = () => {
+  const handleConfirmSwap = async () => {
     setSwapping(true)
-    setTimeout(() => {
+    try {
+      const currentFloorData = floors.find(f => f.id === floor)
+      const slotData = currentFloorData?.rawSlots?.find(s => s.slotName === newSlot)
+      
+      if (booking.reservationId && slotData?.id) {
+        await GuestService.swapSlot(booking.reservationId, slotData.id)
+      }
+      
+      updateBooking(booking.ticketCode, { 
+        ticketCode: newTicketCode, 
+        parking: { ...booking.parking, slot: newSlot, floor } 
+      })
+      
       setSwapping(false)
       setStep(2)
-    }, 1600)
+    } catch (err) {
+      console.error("Gagal swap:", err)
+      alert(err.message || "Gagal memproses tukar slot parkir")
+      setSwapping(false)
+    }
   }
 
   return (
@@ -72,8 +130,8 @@ export default function SwapPage() {
         {step === 0 && (
           <SwapSelectStep
             booking={booking}
-            parkings={allowedParkings}
-            floors={FLOORS}
+            parkings={parkings}
+            floors={floors}
             selectedParking={selectedParking}
             floor={floor}
             newSlot={newSlot}

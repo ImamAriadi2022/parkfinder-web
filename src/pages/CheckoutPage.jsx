@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Button, Container } from 'react-bootstrap'
 import { expireBooking } from '../utils/bookingStore'
+import { GuestService } from '../services/api'
 import CheckoutConfirmStep from '../components/pages/CheckoutPage/CheckoutConfirmStep'
 import CheckoutHeader from '../components/pages/CheckoutPage/CheckoutHeader'
 import CheckoutStepper from '../components/pages/CheckoutPage/CheckoutStepper'
@@ -32,13 +33,20 @@ export default function CheckoutPage() {
     )
   }
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     setProcessing(true)
-    setTimeout(() => {
+    try {
+      if (booking.reservationId) {
+        await GuestService.completeReservation(booking.reservationId)
+      }
       expireBooking(booking.ticketCode)
       setProcessing(false)
       setStep(1)
-    }, 2000)
+    } catch (err) {
+      console.error("Gagal checkout:", err)
+      alert(err.message || "Gagal melakukan proses keluar parkir")
+      setProcessing(false)
+    }
   }
 
   return (

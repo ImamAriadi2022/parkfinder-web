@@ -1,4 +1,5 @@
 import { Card, Col, Container, Row } from 'react-bootstrap'
+import { GuestService } from '../../../services/api'
 
 export default function LandingDownloadCta({ cdn }) {
   return (
@@ -15,7 +16,7 @@ export default function LandingDownloadCta({ cdn }) {
                 </p>
                 <div className="d-flex flex-wrap gap-3">
                   {['android', 'ios'].map(platform => (
-                    <a key={platform} href="#" className="download-btn download-btn-lg" onClick={e => e.preventDefault()}>
+                    <a key={platform} href={GuestService.getDownloadAppLink()} target="_blank" rel="noopener noreferrer" className="download-btn download-btn-lg">
                       <span className="download-btn-icon">
                         <img
                           src={`${cdn}/foto/${platform}.png`}
