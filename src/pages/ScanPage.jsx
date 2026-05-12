@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Col, Container, Row } from 'react-bootstrap'
 import { Html5QrcodeScanner } from 'html5-qrcode'
@@ -20,8 +20,11 @@ export default function ScanPage() {
   const [scanned, setScanned] = useState(false)
   const [error, setError] = useState('')
 
+  const scanningRef = useRef(false)
+  const scannedRef = useRef(false)
+
   useEffect(() => {
-    // Initialize the scanner
+    // Initialize the scanner only once
     const scanner = new Html5QrcodeScanner("qr-reader", { 
       fps: 10, 
       qrbox: { width: 250, height: 250 },
@@ -30,14 +33,17 @@ export default function ScanPage() {
     }, false);
 
     const onScanSuccess = async (decodedText) => {
-      if (scanning || scanned) return; // Prevent multiple scans at once
+      if (scanningRef.current || scannedRef.current) return; // Prevent multiple scans at once
 
+      scanningRef.current = true;
       scanner.pause()
       setError('')
       setScanning(true)
       
       try {
         const result = await GuestService.verifyTicket(decodedText.trim())
+        scanningRef.current = false;
+        scannedRef.current = true;
         setScanning(false)
         setScanned(true)
         
@@ -48,6 +54,7 @@ export default function ScanPage() {
           navigate(redirect, { state: { ...parkingData, apiResult: result } })
         }, 1500)
       } catch (err) {
+        scanningRef.current = false;
         setScanning(false)
         setError(err.message || 'Gagal verifikasi tiket')
         // Resume scanning after a short delay so user can try again
@@ -69,7 +76,7 @@ export default function ScanPage() {
     return () => {
       scanner.clear().catch(err => console.error("Failed to clear scanner", err));
     };
-  }, [navigate, redirect, parkingData, scanning, scanned]);
+  }, [navigate, redirect, parkingData]); // Removed scanning and scanned to prevent re-initialization
 
   return (
     <div className="scan-page" style={{ paddingTop: 'var(--nav-h)', minHeight: '100vh' }}>
