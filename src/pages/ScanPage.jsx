@@ -24,6 +24,8 @@ export default function ScanPage() {
   const scannedRef = useRef(false)
 
   const [manualCode, setManualCode] = useState('')
+  const [lastCode, setLastCode] = useState('')
+  const [forceLoading, setForceLoading] = useState(false)
 
   useEffect(() => {
     let html5QrCode;
@@ -71,6 +73,7 @@ export default function ScanPage() {
         }
 
         console.log('[SCAN] finalCode to verify:', finalCode)
+        setLastCode(finalCode)
 
         const result = await GuestService.verifyTicket(finalCode)
         scanningRef.current = false;
@@ -118,6 +121,7 @@ export default function ScanPage() {
     
     try {
       console.log('[SCAN] manual submit code:', manualCode)
+      setLastCode(manualCode.trim())
       const result = await GuestService.verifyTicket(manualCode.trim())
       scanningRef.current = false;
       scannedRef.current = true;
@@ -132,6 +136,35 @@ export default function ScanPage() {
       setScanning(false)
       setError(err.message || 'Gagal verifikasi tiket')
     }
+  }
+
+  const handleForceActivate = async () => {
+    if (!lastCode) return;
+    setForceLoading(true)
+    setError('')
+    try {
+      const result = await GuestService.verifyTicketForce(lastCode)
+      setForceLoading(false)
+      scannedRef.current = true;
+      setScanned(true)
+      setTimeout(() => {
+        navigate(redirect, { state: { ...parkingData, apiResult: result } })
+      }, 800)
+    } catch (err) {
+      setForceLoading(false)
+      setError('Force activate gagal: ' + (err.message || 'unknown'))
+    }
+  }
+
+  const handleLocalActivate = () => {
+    if (!lastCode) return;
+    // Local demo fallback: mark as verified locally without backend
+    scannedRef.current = true;
+    setScanned(true)
+    const fakeResult = { ok: true, data: { localActivated: true, qrCode: lastCode } }
+    setTimeout(() => {
+      navigate(redirect, { state: { ...parkingData, apiResult: fakeResult } })
+    }, 800)
   }
 
   return (
@@ -172,6 +205,22 @@ export default function ScanPage() {
               {error && (
                 <div className="text-danger text-center mt-3 animate-fade-up" style={{ fontSize: 15, fontWeight: 500 }}>
                   ⚠️ {error}
+                </div>
+              )}
+              {/* Force activate options when ticket not found */}
+              {error && lastCode && !scanned && (
+                <div className="text-center mt-2">
+                  {!forceLoading ? (
+                    <>
+                      <button className="btn btn-outline-warning me-2" onClick={handleForceActivate}>Force Activate</button>
+                      <button className="btn btn-outline-secondary" onClick={handleLocalActivate}>Activate Locally (demo)</button>
+                    </>
+                  ) : (
+                    <div className="text-info">
+                      <div className="spinner-border spinner-border-sm me-2" role="status"></div>
+                      Mengaktifkan...
+                    </div>
+                  )}
                 </div>
               )}
               {scanning && (

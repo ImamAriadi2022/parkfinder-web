@@ -30,6 +30,24 @@ export const GuestService = {
     return handleResponse(response);
   },
 
+  // Try to verify and create ticket if not exists (backend must support createIfNotExists)
+  verifyTicketForce: async (ticketId) => {
+    const payload = { qrCode: ticketId, createIfNotExists: true };
+    console.log('[API] verifyTicketForce -> request payload:', payload);
+    const response = await fetch(`${BASE_URL}/access/verify`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const respText = await response.clone().text().catch(() => null);
+    console.log('[API] verifyTicketForce -> status:', response.status, 'responseText:', respText);
+
+    return handleResponse(response);
+  },
+
   getActiveTicket: async (guestSessionId) => {
     const response = await fetch(`${BASE_URL}/access/activeTicket?guestSessionId=${guestSessionId}`);
     return handleResponse(response);
