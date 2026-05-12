@@ -13,13 +13,20 @@ export const GuestService = {
   // --- Guest Access APIs ---
 
   verifyTicket: async (ticketId) => {
+    const payload = { qrCode: ticketId };
+    console.log('[API] verifyTicket -> request payload:', payload);
     const response = await fetch(`${BASE_URL}/access/verify`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ qrCode: ticketId }),
+      body: JSON.stringify(payload),
     });
+
+    // Clone response to safely read text for logging without consuming the body
+    const respText = await response.clone().text().catch(() => null);
+    console.log('[API] verifyTicket -> status:', response.status, 'responseText:', respText);
+
     return handleResponse(response);
   },
 

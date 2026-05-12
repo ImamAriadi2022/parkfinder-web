@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { Col, Container, Row } from 'react-bootstrap'
 import { Html5Qrcode } from 'html5-qrcode'
+import { useEffect, useRef, useState } from 'react'
+import { Col, Container, Row } from 'react-bootstrap'
+import { useLocation, useNavigate } from 'react-router-dom'
 import ScanBackground from '../components/pages/ScanPage/ScanBackground'
 import ScanFooterBack from '../components/pages/ScanPage/ScanFooterBack'
 import ScanHeader from '../components/pages/ScanPage/ScanHeader'
@@ -56,15 +56,21 @@ export default function ScanPage() {
       setScanning(true)
       
       try {
+        // Debug: print raw decoded value (before trim/parse)
+        console.log('[SCAN] decodedText(raw):', decodedText)
+
         // Here we parse if it's JSON from our Dash QR, or just plain text
-        let finalCode = decodedText.trim()
+        let finalCode = String(decodedText || '').trim()
+        console.log('[SCAN] decodedText(trimmed):', finalCode)
         try {
           const parsed = JSON.parse(finalCode)
-          if (parsed.qrCode) finalCode = parsed.qrCode
-          else if (parsed.ticketCode) finalCode = parsed.ticketCode
+          if (parsed.qrCode) finalCode = String(parsed.qrCode || '').trim()
+          else if (parsed.ticketCode) finalCode = String(parsed.ticketCode || '').trim()
         } catch (e) {
           // not json, use as is
         }
+
+        console.log('[SCAN] finalCode to verify:', finalCode)
 
         const result = await GuestService.verifyTicket(finalCode)
         scanningRef.current = false;
@@ -111,6 +117,7 @@ export default function ScanPage() {
     setScanning(true)
     
     try {
+      console.log('[SCAN] manual submit code:', manualCode)
       const result = await GuestService.verifyTicket(manualCode.trim())
       scanningRef.current = false;
       scannedRef.current = true;
