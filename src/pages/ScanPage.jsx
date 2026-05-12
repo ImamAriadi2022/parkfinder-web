@@ -60,7 +60,8 @@ export default function ScanPage() {
         let finalCode = decodedText.trim()
         try {
           const parsed = JSON.parse(finalCode)
-          if (parsed.ticketCode) finalCode = parsed.ticketCode
+          if (parsed.qrCode) finalCode = parsed.qrCode
+          else if (parsed.ticketCode) finalCode = parsed.ticketCode
         } catch (e) {
           // not json, use as is
         }

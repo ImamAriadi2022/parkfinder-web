@@ -18,7 +18,7 @@ export const GuestService = {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ ticketId, qrCode: ticketId }),
+      body: JSON.stringify({ qrCode: ticketId }),
     });
     return handleResponse(response);
   },
