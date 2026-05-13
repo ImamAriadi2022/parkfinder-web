@@ -16,12 +16,14 @@ export default function BookingPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const parking = location.state || null
+  const scannedQrCode = location.state?.scannedQrCode || null
 
   const [step, setStep] = useState(0)
   const [form, setForm] = useState({ name: '', plate: '', phone: '' })
   const [errors, setErrors] = useState({})
 
-  const ticketRef = useRef(`PKF-${Date.now().toString(36).toUpperCase().slice(-8)}`)
+  // Use scanned QR code if available, otherwise generate new ticket code
+  const ticketRef = useRef(scannedQrCode || `PKF-${Date.now().toString(36).toUpperCase().slice(-8)}`)
   const ticketCode = ticketRef.current
 
   const validate = () => {

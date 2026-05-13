@@ -122,7 +122,7 @@ export default function ScanPage() {
         }
 
         setTimeout(() => {
-          navigate(redirect, { state: { ...parkingData, apiResult: result } })
+          navigate(redirect, { state: { ...parkingData, apiResult: result, scannedQrCode: finalCode } })
         }, 1500)
       } catch (err) {
         console.error('[SCAN] verify failed:', err)
@@ -138,7 +138,7 @@ export default function ScanPage() {
             await html5QrCode.stop()
           }
           setTimeout(() => {
-            navigate(redirect, { state: { ...parkingData, apiResult: forceResult } })
+            navigate(redirect, { state: { ...parkingData, apiResult: forceResult, scannedQrCode: finalCode } })
           }, 1500)
           return
         } catch (forceErr) {
@@ -189,7 +189,7 @@ export default function ScanPage() {
       setScanned(true)
       
       setTimeout(() => {
-        navigate(redirect, { state: { ...parkingData, apiResult: result } })
+        navigate(redirect, { state: { ...parkingData, apiResult: result, scannedQrCode: normalizedCode } })
       }, 1500)
     } catch (err) {
       console.error('[SCAN] manual verify failed:', err)
@@ -202,7 +202,7 @@ export default function ScanPage() {
         scannedRef.current = true;
         setScanned(true)
         setTimeout(() => {
-          navigate(redirect, { state: { ...parkingData, apiResult: forceResult } })
+          navigate(redirect, { state: { ...parkingData, apiResult: forceResult, scannedQrCode: normalizedCode } })
         }, 1500)
         return
       } catch (forceErr) {
@@ -225,7 +225,7 @@ export default function ScanPage() {
       scannedRef.current = true;
       setScanned(true)
       setTimeout(() => {
-        navigate(redirect, { state: { ...parkingData, apiResult: result } })
+        navigate(redirect, { state: { ...parkingData, apiResult: result, scannedQrCode: lastCode } })
       }, 800)
     } catch (err) {
       setForceLoading(false)
@@ -240,7 +240,7 @@ export default function ScanPage() {
     setScanned(true)
     const fakeResult = { ok: true, data: { localActivated: true, qrCode: lastCode } }
     setTimeout(() => {
-      navigate(redirect, { state: { ...parkingData, apiResult: fakeResult } })
+      navigate(redirect, { state: { ...parkingData, apiResult: fakeResult, scannedQrCode: lastCode } })
     }, 800)
   }
 
