@@ -70,7 +70,7 @@ export default function LandingPage() {
       <LandingStats stats={STATS} />
       <LandingParkings
         parkings={parkings}
-        onBooking={(parking) => navigate('/scan', { state: { redirect: '/booking', parking } })}
+        onBooking={(parking) => navigate('/scan', { state: { redirect: '/parking', parking } })}
         onSeeAll={() => navigate('/parking')}
       />
       <LandingFeatures features={FEATURES} />

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { Col, Container, Row } from 'react-bootstrap'
 import ParkingHeader from '../components/pages/ParkingPage/ParkingHeader'
 import ParkingList from '../components/pages/ParkingPage/ParkingList'
@@ -10,8 +10,11 @@ import '../styles/pages/ParkingPage.css'
 
 export default function ParkingPage() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const scannedQrCode = location.state?.scannedQrCode || null
+
   const [search, setSearch] = useState('')
-  const [selected, setSelected] = useState(null)
+  const [selected, setSelected] = useState(location.state?.id ? location.state : null)
   const [floor, setFloor] = useState('')
   const [selectedSlot, setSelectedSlot] = useState(null)
 
@@ -109,7 +112,7 @@ export default function ParkingPage() {
                 onSelectSlot={setSelectedSlot}
                 onBook={() => {
                    const slotData = currentFloor.rawSlots?.find(s => s.slotName === selectedSlot)
-                   navigate('/booking', { state: { ...selected, slot: selectedSlot, slotId: slotData?.id, floor } })
+                   navigate('/booking', { state: { ...selected, slot: selectedSlot, slotId: slotData?.id, floor, scannedQrCode } })
                 }}
               />
             )}
