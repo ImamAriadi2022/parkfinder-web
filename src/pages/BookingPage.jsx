@@ -1,14 +1,14 @@
 import { useRef, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
 import { Container } from 'react-bootstrap'
-import { saveBooking } from '../utils/bookingStore'
-import { GuestService } from '../services/api'
+import { useLocation, useNavigate } from 'react-router-dom'
 import BookingConfirmStep from '../components/pages/BookingPage/BookingConfirmStep'
 import BookingFormStep from '../components/pages/BookingPage/BookingFormStep'
 import BookingHeader from '../components/pages/BookingPage/BookingHeader'
 import BookingStepper from '../components/pages/BookingPage/BookingStepper'
 import BookingSuccessStep from '../components/pages/BookingPage/BookingSuccessStep'
+import { GuestService } from '../services/api'
 import '../styles/pages/BookingPage.css'
+import { saveBooking } from '../utils/bookingStore'
 
 const STEPS = ['Detail Booking', 'Konfirmasi', 'Selesai']
 
