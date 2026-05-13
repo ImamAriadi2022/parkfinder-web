@@ -102,24 +102,6 @@ export default function ScanPage() {
         console.log('[SCAN] finalCode to verify:', finalCode)
         setLastCode(finalCode)
 
-        // If finalCode follows token pattern (PF-...), accept immediately without ticket lookup
-        const tokenPattern = /^PF-[A-Za-z0-9\-]+$/
-        if (tokenPattern.test(finalCode)) {
-          console.log('[SCAN] token pattern matched — activating locally without ticket lookup')
-          scannedRef.current = true
-          setScanned(true)
-          const fakeResult = { ok: true, data: { activatedByToken: true, qrCode: finalCode } }
-          if (html5QrCode && html5QrCode.isScanning) {
-            await html5QrCode.stop()
-          }
-          setTimeout(() => {
-            navigate(redirect, { state: { ...parkingData, apiResult: fakeResult } })
-          }, 800)
-          scanningRef.current = false
-          setScanning(false)
-          return
-        }
-
         const result = await GuestService.verifyTicket(finalCode)
         scanningRef.current = false;
         scannedRef.current = true;
