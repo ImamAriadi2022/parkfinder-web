@@ -29,43 +29,7 @@ export default function ScanPage() {
   const [forceLoading, setForceLoading] = useState(false)
   const [scanGuestSessionId, setScanGuestSessionId] = useState(guestSessionId || null)
 
-  const extractTicketCode = (rawValue) => {
-    let value = String(rawValue || '').trim()
-    if (!value) return ''
 
-    try {
-      const parsed = JSON.parse(value)
-      if (parsed?.qrCode) {
-        // Extract guestSessionId jika ada di payload JSON
-        if (parsed?.guestSessionId) {
-          setScanGuestSessionId(parsed.guestSessionId)
-        }
-        return String(parsed.qrCode).trim()
-      }
-      if (parsed?.ticketCode) return String(parsed.ticketCode).trim()
-    } catch (e) {
-      // Non-JSON payload, continue with text/url parsing.
-    }
-
-    // If QR contains URL, try common query params first.
-    try {
-      const url = new URL(value)
-      const fromParams =
-        url.searchParams.get('qrCode') ||
-        url.searchParams.get('ticketCode') ||
-        url.searchParams.get('ticket') ||
-        url.searchParams.get('code')
-
-      if (fromParams) return String(fromParams).trim()
-
-      const lastPath = url.pathname.split('/').filter(Boolean).pop()
-      if (lastPath) return String(lastPath).trim()
-    } catch (e) {
-      // Non-URL payload, use as-is.
-    }
-
-    return value
-  }
 
   useEffect(() => {
     let html5QrCode;
@@ -103,8 +67,8 @@ export default function ScanPage() {
         // Debug: print raw decoded value (before trim/parse)
         console.log('[SCAN] decodedText(raw):', decodedText)
 
-        // Parse raw scan payload from plain text, JSON, or URL format.
-        finalCode = extractTicketCode(decodedText)
+        // Use pure string from scan as requested
+        finalCode = String(decodedText || '').trim()
         console.log('[SCAN] decodedText(trimmed):', String(decodedText || '').trim())
 
         console.log('[SCAN] finalCode to verify:', finalCode)
@@ -178,7 +142,7 @@ export default function ScanPage() {
     setScanning(true)
     
     try {
-      normalizedCode = extractTicketCode(manualCode)
+      normalizedCode = String(manualCode || '').trim()
       console.log('[SCAN] manual submit code:', normalizedCode)
       setLastCode(normalizedCode)
       // Endpoint verify hanya perlu qrCode, tanpa guestSessionId

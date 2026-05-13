@@ -17,13 +17,17 @@ export default function BookingPage() {
   const location = useLocation()
   const parking = location.state || null
   const scannedQrCode = location.state?.scannedQrCode || null
+  const apiResult = location.state?.apiResult || null
 
   const [step, setStep] = useState(0)
   const [form, setForm] = useState({ name: '', plate: '', phone: '' })
   const [errors, setErrors] = useState({})
 
-  // Use scanned QR code if available, otherwise generate new ticket code
-  const guestSessionRef = useRef(scannedQrCode || `PKF-${Date.now().toString(36).toUpperCase().slice(-8)}`)
+  // Extract ticketId from apiResult or use scannedQrCode
+  const ticketId = apiResult?.ticketId || apiResult?.data?.ticketId || scannedQrCode
+
+  // Use guestSessionId from api if available, otherwise generate new ticket code
+  const guestSessionRef = useRef(apiResult?.guestSessionId || apiResult?.data?.guestSessionId || scannedQrCode || `PKF-${Date.now().toString(36).toUpperCase().slice(-8)}`)
   const guestSessionId = guestSessionRef.current
 
   const validate = () => {
@@ -47,7 +51,7 @@ export default function BookingPage() {
       try {
         const payload = {
           slotId: parking?.slotId || 'UNKNOWN_SLOT',
-          ticketId: guestSessionId,
+          ticketId: ticketId || guestSessionId,
           name: form.name,
           plateNumber: form.plate
         }
