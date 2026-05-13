@@ -12,8 +12,18 @@ const handleResponse = async (response) => {
 export const GuestService = {
   // --- Guest Access APIs ---
 
+  buildVerifyPayload: (ticketCode, extra = {}) => {
+    const normalized = String(ticketCode || '').trim()
+    // Keep both keys for backward/forward compatibility with backend contracts.
+    return {
+      ticketId: normalized,
+      qrCode: normalized,
+      ...extra,
+    }
+  },
+
   verifyTicket: async (ticketId) => {
-    const payload = { qrCode: ticketId };
+    const payload = GuestService.buildVerifyPayload(ticketId)
     console.log('[API] verifyTicket -> request payload:', payload);
     const response = await fetch(`${BASE_URL}/access/verify`, {
       method: 'POST',
@@ -32,7 +42,7 @@ export const GuestService = {
 
   // Try to verify and create ticket if not exists (backend must support createIfNotExists)
   verifyTicketForce: async (ticketId) => {
-    const payload = { qrCode: ticketId, createIfNotExists: true };
+    const payload = GuestService.buildVerifyPayload(ticketId)
     console.log('[API] verifyTicketForce -> request payload:', payload);
     const response = await fetch(`${BASE_URL}/access/verify`, {
       method: 'POST',

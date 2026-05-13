@@ -27,6 +27,40 @@ export default function ScanPage() {
   const [lastCode, setLastCode] = useState('')
   const [forceLoading, setForceLoading] = useState(false)
 
+  const extractTicketCode = (rawValue) => {
+    let value = String(rawValue || '').trim()
+    if (!value) return ''
+
+    try {
+      const parsed = JSON.parse(value)
+      if (parsed?.qrCode) return String(parsed.qrCode).trim()
+      if (parsed?.ticketCode) return String(parsed.ticketCode).trim()
+      if (parsed?.ticketId) return String(parsed.ticketId).trim()
+    } catch (e) {
+      // Non-JSON payload, continue with text/url parsing.
+    }
+
+    // If QR contains URL, try common query params first.
+    try {
+      const url = new URL(value)
+      const fromParams =
+        url.searchParams.get('qrCode') ||
+        url.searchParams.get('ticketCode') ||
+        url.searchParams.get('ticketId') ||
+        url.searchParams.get('ticket') ||
+        url.searchParams.get('code')
+
+      if (fromParams) return String(fromParams).trim()
+
+      const lastPath = url.pathname.split('/').filter(Boolean).pop()
+      if (lastPath) return String(lastPath).trim()
+    } catch (e) {
+      // Non-URL payload, use as-is.
+    }
+
+    return value
+  }
+
   useEffect(() => {
     let html5QrCode;
     
@@ -61,16 +95,9 @@ export default function ScanPage() {
         // Debug: print raw decoded value (before trim/parse)
         console.log('[SCAN] decodedText(raw):', decodedText)
 
-        // Here we parse if it's JSON from our Dash QR, or just plain text
-        let finalCode = String(decodedText || '').trim()
-        console.log('[SCAN] decodedText(trimmed):', finalCode)
-        try {
-          const parsed = JSON.parse(finalCode)
-          if (parsed.qrCode) finalCode = String(parsed.qrCode || '').trim()
-          else if (parsed.ticketCode) finalCode = String(parsed.ticketCode || '').trim()
-        } catch (e) {
-          // not json, use as is
-        }
+        // Parse raw scan payload from plain text, JSON, or URL format.
+        const finalCode = extractTicketCode(decodedText)
+        console.log('[SCAN] decodedText(trimmed):', String(decodedText || '').trim())
 
         console.log('[SCAN] finalCode to verify:', finalCode)
         setLastCode(finalCode)
@@ -89,14 +116,34 @@ export default function ScanPage() {
           navigate(redirect, { state: { ...parkingData, apiResult: result } })
         }, 1500)
       } catch (err) {
-        scanningRef.current = false;
-        setScanning(false)
-        setError(err.message || 'Gagal verifikasi tiket')
-        setTimeout(() => { 
-          if(html5QrCode && html5QrCode.isScanning) {
-            html5QrCode.resume() 
+        console.error('[SCAN] verify failed:', err)
+
+        // Automatic fallback: try force-activate via API flag
+        try {
+          setForceLoading(true)
+          const forceResult = await GuestService.verifyTicketForce(finalCode)
+          setForceLoading(false)
+          scannedRef.current = true;
+          setScanned(true)
+          if (html5QrCode && html5QrCode.isScanning) {
+            await html5QrCode.stop()
           }
-        }, 2000)
+          setTimeout(() => {
+            navigate(redirect, { state: { ...parkingData, apiResult: forceResult } })
+          }, 1500)
+          return
+        } catch (forceErr) {
+          console.error('[SCAN] force verify failed:', forceErr)
+          setForceLoading(false)
+          scanningRef.current = false;
+          setScanning(false)
+          setError(forceErr.message || err.message || 'Gagal verifikasi tiket')
+          setTimeout(() => {
+            if(html5QrCode && html5QrCode.isScanning) {
+              html5QrCode.resume()
+            }
+          }, 2000)
+        }
       }
     }
 
@@ -120,9 +167,10 @@ export default function ScanPage() {
     setScanning(true)
     
     try {
-      console.log('[SCAN] manual submit code:', manualCode)
-      setLastCode(manualCode.trim())
-      const result = await GuestService.verifyTicket(manualCode.trim())
+      const normalizedCode = extractTicketCode(manualCode)
+      console.log('[SCAN] manual submit code:', normalizedCode)
+      setLastCode(normalizedCode)
+      const result = await GuestService.verifyTicket(normalizedCode)
       scanningRef.current = false;
       scannedRef.current = true;
       setScanning(false)
@@ -132,9 +180,26 @@ export default function ScanPage() {
         navigate(redirect, { state: { ...parkingData, apiResult: result } })
       }, 1500)
     } catch (err) {
-      scanningRef.current = false;
-      setScanning(false)
-      setError(err.message || 'Gagal verifikasi tiket')
+      console.error('[SCAN] manual verify failed:', err)
+
+      // Try force-activate automatically for manual submit
+      try {
+        setForceLoading(true)
+        const forceResult = await GuestService.verifyTicketForce(normalizedCode)
+        setForceLoading(false)
+        scannedRef.current = true;
+        setScanned(true)
+        setTimeout(() => {
+          navigate(redirect, { state: { ...parkingData, apiResult: forceResult } })
+        }, 1500)
+        return
+      } catch (forceErr) {
+        console.error('[SCAN] manual force failed:', forceErr)
+        setForceLoading(false)
+        scanningRef.current = false;
+        setScanning(false)
+        setError(forceErr.message || err.message || 'Gagal verifikasi tiket')
+      }
     }
   }
 
