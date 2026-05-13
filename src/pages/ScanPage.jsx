@@ -84,6 +84,8 @@ export default function ScanPage() {
     const onScanSuccess = async (decodedText) => {
       if (scanningRef.current || scannedRef.current) return;
 
+      let finalCode = ''
+
       scanningRef.current = true;
       if (html5QrCode && html5QrCode.isScanning) {
         html5QrCode.pause()
@@ -96,7 +98,7 @@ export default function ScanPage() {
         console.log('[SCAN] decodedText(raw):', decodedText)
 
         // Parse raw scan payload from plain text, JSON, or URL format.
-        const finalCode = extractTicketCode(decodedText)
+        finalCode = extractTicketCode(decodedText)
         console.log('[SCAN] decodedText(trimmed):', String(decodedText || '').trim())
 
         console.log('[SCAN] finalCode to verify:', finalCode)
@@ -162,12 +164,14 @@ export default function ScanPage() {
     e.preventDefault();
     if (!manualCode.trim() || scanningRef.current || scannedRef.current) return;
 
+    let normalizedCode = ''
+
     scanningRef.current = true;
     setError('')
     setScanning(true)
     
     try {
-      const normalizedCode = extractTicketCode(manualCode)
+      normalizedCode = extractTicketCode(manualCode)
       console.log('[SCAN] manual submit code:', normalizedCode)
       setLastCode(normalizedCode)
       const result = await GuestService.verifyTicket(normalizedCode)
