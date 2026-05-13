@@ -108,10 +108,10 @@ export default function ScanPage() {
         console.log('[SCAN] decodedText(trimmed):', String(decodedText || '').trim())
 
         console.log('[SCAN] finalCode to verify:', finalCode)
-        console.log('[SCAN] guestSessionId:', scanGuestSessionId)
         setLastCode(finalCode)
 
-        const result = await GuestService.verifyTicket(finalCode, scanGuestSessionId)
+        // Endpoint verify hanya perlu qrCode, tanpa guestSessionId
+        const result = await GuestService.verifyTicket(finalCode)
         scanningRef.current = false;
         scannedRef.current = true;
         setScanning(false)
@@ -130,7 +130,7 @@ export default function ScanPage() {
         // Automatic fallback: try force-activate via API flag
         try {
           setForceLoading(true)
-          const forceResult = await GuestService.verifyTicketForce(finalCode, scanGuestSessionId)
+          const forceResult = await GuestService.verifyTicketForce(finalCode)
           setForceLoading(false)
           scannedRef.current = true;
           setScanned(true)
@@ -180,9 +180,9 @@ export default function ScanPage() {
     try {
       normalizedCode = extractTicketCode(manualCode)
       console.log('[SCAN] manual submit code:', normalizedCode)
-      console.log('[SCAN] guestSessionId:', scanGuestSessionId)
       setLastCode(normalizedCode)
-      const result = await GuestService.verifyTicket(normalizedCode, scanGuestSessionId)
+      // Endpoint verify hanya perlu qrCode, tanpa guestSessionId
+      const result = await GuestService.verifyTicket(normalizedCode)
       scanningRef.current = false;
       scannedRef.current = true;
       setScanning(false)
@@ -197,7 +197,7 @@ export default function ScanPage() {
       // Try force-activate automatically for manual submit
       try {
         setForceLoading(true)
-        const forceResult = await GuestService.verifyTicketForce(normalizedCode, scanGuestSessionId)
+        const forceResult = await GuestService.verifyTicketForce(normalizedCode)
         setForceLoading(false)
         scannedRef.current = true;
         setScanned(true)

@@ -12,21 +12,17 @@ const handleResponse = async (response) => {
 export const GuestService = {
   // --- Guest Access APIs ---
 
-  buildVerifyPayload: (ticketCode, guestSId, extra = {}) => {
-    const normalized = String(ticketCode || '').trim()
-    // Backend expect qrCode dan guestSessionId untuk mengidentifikasi guest dan tiket
-    const payload = {
+  buildVerifyPayload: (qrCode, extra = {}) => {
+    const normalized = String(qrCode || '').trim()
+    // Backend endpoint verify: hanya expect qrCode field saja
+    return {
       qrCode: normalized,
+      ...extra,
     }
-    // Tambah guestSessionId jika tersedia untuk context guest
-    if (guestSId) {
-      payload.guestSessionId = guestSId
-    }
-    return { ...payload, ...extra }
   },
 
-  verifyTicket: async (ticketId, guestSessionId) => {
-    const payload = GuestService.buildVerifyPayload(ticketId, guestSessionId)
+  verifyTicket: async (qrCode) => {
+    const payload = GuestService.buildVerifyPayload(qrCode)
     console.log('[API] verifyTicket -> request payload:', payload);
     const response = await fetch(`${BASE_URL}/access/verify`, {
       method: 'POST',
@@ -44,8 +40,8 @@ export const GuestService = {
   },
 
   // Same verify endpoint, kept as a separate call path for compatibility with the UI flow.
-  verifyTicketForce: async (ticketId, guestSessionId) => {
-    const payload = GuestService.buildVerifyPayload(ticketId, guestSessionId)
+  verifyTicketForce: async (qrCode) => {
+    const payload = GuestService.buildVerifyPayload(qrCode)
     console.log('[API] verifyTicketForce -> request payload:', payload);
     const response = await fetch(`${BASE_URL}/access/verify`, {
       method: 'POST',
@@ -66,13 +62,14 @@ export const GuestService = {
     return handleResponse(response);
   },
 
-  cancelTicket: async (guestSessionId) => {
+  cancelTicket: async (ticketId, guestSessionId) => {
+    // Cancel endpoint expect: ticketId dan guestSessionId
     const response = await fetch(`${BASE_URL}/access/cancelTicket`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ guestSessionId }),
+      body: JSON.stringify({ ticketId, guestSessionId }),
     });
     return handleResponse(response);
   },
