@@ -23,8 +23,8 @@ export default function BookingPage() {
   const [errors, setErrors] = useState({})
 
   // Use scanned QR code if available, otherwise generate new ticket code
-  const ticketRef = useRef(scannedQrCode || `PKF-${Date.now().toString(36).toUpperCase().slice(-8)}`)
-  const ticketCode = ticketRef.current
+  const guestSessionRef = useRef(scannedQrCode || `PKF-${Date.now().toString(36).toUpperCase().slice(-8)}`)
+  const guestSessionId = guestSessionRef.current
 
   const validate = () => {
     const nextErrors = {}
@@ -47,14 +47,14 @@ export default function BookingPage() {
       try {
         const payload = {
           slotId: parking?.slotId || 'UNKNOWN_SLOT',
-          ticketId: ticketCode,
+          guestSessionId,
           name: form.name,
           plateNumber: form.plate
         }
         const res = await GuestService.createReservation(payload)
         
         saveBooking({
-          ticketCode,
+          ticketCode: guestSessionId,
           reservationId: res.data?.id,
           name: form.name,
           plate: form.plate,
@@ -104,11 +104,11 @@ export default function BookingPage() {
 
         {step === 2 && (
           <BookingSuccessStep
-            ticketCode={ticketCode}
+            ticketCode={guestSessionId}
             form={form}
             parking={parking}
-            onSwap={() => navigate('/swap', { state: { ticketCode, name: form.name, plate: form.plate, phone: form.phone, parking } })}
-            onCheckout={() => navigate('/checkout', { state: { ticketCode, name: form.name, plate: form.plate, phone: form.phone, parking } })}
+            onSwap={() => navigate('/swap', { state: { ticketCode: guestSessionId, name: form.name, plate: form.plate, phone: form.phone, parking } })}
+            onCheckout={() => navigate('/checkout', { state: { ticketCode: guestSessionId, name: form.name, plate: form.plate, phone: form.phone, parking } })}
             onMyBooking={() => navigate('/my-booking')}
             onBookingAgain={() => navigate('/parking')}
             onHome={() => navigate('/')}
