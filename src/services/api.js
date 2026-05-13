@@ -12,17 +12,21 @@ const handleResponse = async (response) => {
 export const GuestService = {
   // --- Guest Access APIs ---
 
-  buildVerifyPayload: (ticketCode, extra = {}) => {
+  buildVerifyPayload: (ticketCode, guestSId, extra = {}) => {
     const normalized = String(ticketCode || '').trim()
-    // Backend currently validates qrCode and rejects unknown fields like ticketId.
-    return {
+    // Backend expect qrCode dan guestSessionId untuk mengidentifikasi guest dan tiket
+    const payload = {
       qrCode: normalized,
-      ...extra,
     }
+    // Tambah guestSessionId jika tersedia untuk context guest
+    if (guestSId) {
+      payload.guestSessionId = guestSId
+    }
+    return { ...payload, ...extra }
   },
 
-  verifyTicket: async (ticketId) => {
-    const payload = GuestService.buildVerifyPayload(ticketId)
+  verifyTicket: async (ticketId, guestSessionId) => {
+    const payload = GuestService.buildVerifyPayload(ticketId, guestSessionId)
     console.log('[API] verifyTicket -> request payload:', payload);
     const response = await fetch(`${BASE_URL}/access/verify`, {
       method: 'POST',
@@ -40,8 +44,8 @@ export const GuestService = {
   },
 
   // Same verify endpoint, kept as a separate call path for compatibility with the UI flow.
-  verifyTicketForce: async (ticketId) => {
-    const payload = GuestService.buildVerifyPayload(ticketId)
+  verifyTicketForce: async (ticketId, guestSessionId) => {
+    const payload = GuestService.buildVerifyPayload(ticketId, guestSessionId)
     console.log('[API] verifyTicketForce -> request payload:', payload);
     const response = await fetch(`${BASE_URL}/access/verify`, {
       method: 'POST',

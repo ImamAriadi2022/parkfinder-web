@@ -15,6 +15,7 @@ export default function ScanPage() {
   const location = useLocation()
   const redirect = location.state?.redirect || '/parking'
   const parkingData = location.state?.parking || null
+  const guestSessionId = location.state?.guestSessionId
 
   const [scanning, setScanning] = useState(false)
   const [scanned, setScanned] = useState(false)
@@ -26,6 +27,7 @@ export default function ScanPage() {
   const [manualCode, setManualCode] = useState('')
   const [lastCode, setLastCode] = useState('')
   const [forceLoading, setForceLoading] = useState(false)
+  const [scanGuestSessionId, setScanGuestSessionId] = useState(guestSessionId || null)
 
   const extractTicketCode = (rawValue) => {
     let value = String(rawValue || '').trim()
@@ -33,7 +35,13 @@ export default function ScanPage() {
 
     try {
       const parsed = JSON.parse(value)
-      if (parsed?.qrCode) return String(parsed.qrCode).trim()
+      if (parsed?.qrCode) {
+        // Extract guestSessionId jika ada di payload JSON
+        if (parsed?.guestSessionId) {
+          setScanGuestSessionId(parsed.guestSessionId)
+        }
+        return String(parsed.qrCode).trim()
+      }
       if (parsed?.ticketCode) return String(parsed.ticketCode).trim()
     } catch (e) {
       // Non-JSON payload, continue with text/url parsing.
@@ -100,9 +108,10 @@ export default function ScanPage() {
         console.log('[SCAN] decodedText(trimmed):', String(decodedText || '').trim())
 
         console.log('[SCAN] finalCode to verify:', finalCode)
+        console.log('[SCAN] guestSessionId:', scanGuestSessionId)
         setLastCode(finalCode)
 
-        const result = await GuestService.verifyTicket(finalCode)
+        const result = await GuestService.verifyTicket(finalCode, scanGuestSessionId)
         scanningRef.current = false;
         scannedRef.current = true;
         setScanning(false)
@@ -121,7 +130,7 @@ export default function ScanPage() {
         // Automatic fallback: try force-activate via API flag
         try {
           setForceLoading(true)
-          const forceResult = await GuestService.verifyTicketForce(finalCode)
+          const forceResult = await GuestService.verifyTicketForce(finalCode, scanGuestSessionId)
           setForceLoading(false)
           scannedRef.current = true;
           setScanned(true)
@@ -171,8 +180,9 @@ export default function ScanPage() {
     try {
       normalizedCode = extractTicketCode(manualCode)
       console.log('[SCAN] manual submit code:', normalizedCode)
+      console.log('[SCAN] guestSessionId:', scanGuestSessionId)
       setLastCode(normalizedCode)
-      const result = await GuestService.verifyTicket(normalizedCode)
+      const result = await GuestService.verifyTicket(normalizedCode, scanGuestSessionId)
       scanningRef.current = false;
       scannedRef.current = true;
       setScanning(false)
@@ -187,7 +197,7 @@ export default function ScanPage() {
       // Try force-activate automatically for manual submit
       try {
         setForceLoading(true)
-        const forceResult = await GuestService.verifyTicketForce(normalizedCode)
+        const forceResult = await GuestService.verifyTicketForce(normalizedCode, scanGuestSessionId)
         setForceLoading(false)
         scannedRef.current = true;
         setScanned(true)
