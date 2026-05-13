@@ -35,7 +35,6 @@ export default function ScanPage() {
       const parsed = JSON.parse(value)
       if (parsed?.qrCode) return String(parsed.qrCode).trim()
       if (parsed?.ticketCode) return String(parsed.ticketCode).trim()
-      if (parsed?.ticketId) return String(parsed.ticketId).trim()
     } catch (e) {
       // Non-JSON payload, continue with text/url parsing.
     }
@@ -46,7 +45,6 @@ export default function ScanPage() {
       const fromParams =
         url.searchParams.get('qrCode') ||
         url.searchParams.get('ticketCode') ||
-        url.searchParams.get('ticketId') ||
         url.searchParams.get('ticket') ||
         url.searchParams.get('code')
 

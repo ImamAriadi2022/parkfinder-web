@@ -14,9 +14,8 @@ export const GuestService = {
 
   buildVerifyPayload: (ticketCode, extra = {}) => {
     const normalized = String(ticketCode || '').trim()
-    // Keep both keys for backward/forward compatibility with backend contracts.
+    // Backend currently validates qrCode and rejects unknown fields like ticketId.
     return {
-      ticketId: normalized,
       qrCode: normalized,
       ...extra,
     }
@@ -40,7 +39,7 @@ export const GuestService = {
     return handleResponse(response);
   },
 
-  // Try to verify and create ticket if not exists (backend must support createIfNotExists)
+  // Same verify endpoint, kept as a separate call path for compatibility with the UI flow.
   verifyTicketForce: async (ticketId) => {
     const payload = GuestService.buildVerifyPayload(ticketId)
     console.log('[API] verifyTicketForce -> request payload:', payload);
