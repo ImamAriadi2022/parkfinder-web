@@ -47,8 +47,7 @@ export default function BookingPage() {
       try {
         const payload = {
           slotId: parking?.slotId || 'UNKNOWN_SLOT',
-          guestSessionId,
-          ticketId: guestSessionId, // Tambahkan ini agar backend menerima ticketId
+          ticketId: guestSessionId,
           name: form.name,
           plateNumber: form.plate
         }
