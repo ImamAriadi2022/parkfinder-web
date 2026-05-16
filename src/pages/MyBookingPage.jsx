@@ -9,6 +9,7 @@ import MyBookingStats from '../components/pages/MyBookingPage/MyBookingStats'
 import { GuestService } from '../services/api'
 import '../styles/pages/MyBookingPage.css'
 import { cancelBooking, getBookings, markBookingArrived, markParkingCompleted } from '../utils/bookingStore'
+import { hasActiveGuestTicket } from '../utils/guestTicketStore'
 
 const CDN = 'https://storage.googleapis.com/parkfinderbucket'
 
@@ -131,7 +132,16 @@ export default function MyBookingPage() {
   return (
     <div style={{ paddingTop: 86, minHeight: '100vh' }}>
       <Container className="py-4">
-        <MyBookingHeader onNewBooking={() => navigate('/parking')} />
+        <MyBookingHeader
+          onNewBooking={() => {
+            const hasTicket = hasActiveGuestTicket()
+            if (!hasTicket) {
+              navigate('/scan', { state: { redirect: '/parking' } })
+              return
+            }
+            navigate('/parking')
+          }}
+        />
         <MyBookingStats activeCount={activeCount} expiredCount={expiredCount} totalCount={bookings.length} />
         <MyBookingFilters filter={filter} onChange={setFilter} activeCount={activeCount} totalCount={bookings.length} />
 

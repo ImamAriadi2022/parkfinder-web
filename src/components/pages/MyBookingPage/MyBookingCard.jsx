@@ -72,8 +72,8 @@ export default function MyBookingCard({ booking, index, formatDate, onSwap, onCh
                   ✓ Sudah Tiba di Slot
                 </Badge>
               )}
-              {!booking.completed && (
-                <Button size="sm" className="btn-pf-outline btn w-100" onClick={() => onSwap(booking)} disabled={!booking.arrived}>
+              {!booking.arrived && !booking.completed && booking.reservationId && (
+                <Button size="sm" className="btn-pf-outline btn w-100" onClick={() => onSwap(booking)}>
                   🔄 Tukar Slot
                 </Button>
               )}

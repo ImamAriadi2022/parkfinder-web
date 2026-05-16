@@ -53,3 +53,24 @@ export function hasActiveBookingForGuestTicket() {
     return false
   })
 }
+
+/** Konteks tiket untuk navigasi booking (tanpa scan ulang jika tiket masih tersimpan) */
+export function getGuestTicketContextForBooking() {
+  const t = getVerifiedTicket()
+  if (!t) {
+    return { ticketId: null, guestSessionId: null, scannedQrCode: null, apiResult: null }
+  }
+  const guestSessionId = t.guestSessionId || t.qrCode || null
+  const ticketId = t.ticketId || null
+  return {
+    ticketId,
+    guestSessionId,
+    scannedQrCode: t.qrCode || guestSessionId,
+    apiResult: {
+      data: {
+        ticketId,
+        guestSessionId,
+      },
+    },
+  }
+}

@@ -10,7 +10,7 @@ import { GuestService, extractReservationId, extractTicketId } from '../services
 import '../styles/pages/BookingPage.css'
 import GuestActiveTicketBar from '../components/GuestActiveTicketBar'
 import { saveBooking } from '../utils/bookingStore'
-import { saveVerifiedTicketFromApi } from '../utils/guestTicketStore'
+import { getGuestTicketContextForBooking, getVerifiedTicket, saveVerifiedTicketFromApi } from '../utils/guestTicketStore'
 
 const STEPS = ['Detail Booking', 'Konfirmasi', 'Selesai']
 
@@ -27,11 +27,16 @@ export default function BookingPage() {
   const [reservationId, setReservationId] = useState(null)
   const [submitting, setSubmitting] = useState(false)
 
-  const resolvedTicketId = extractTicketId(apiResult)
+  const storedTicket = getVerifiedTicket()
+  const ticketCtx = getGuestTicketContextForBooking()
+  const resolvedTicketId = extractTicketId(apiResult) || storedTicket?.ticketId || ticketCtx.ticketId
   const guestSessionRef = useRef(
     apiResult?.data?.guestSessionId
     || apiResult?.guestSessionId
     || scannedQrCode
+    || storedTicket?.guestSessionId
+    || storedTicket?.qrCode
+    || ticketCtx.guestSessionId
     || `PKF-${Date.now().toString(36).toUpperCase().slice(-8)}`
   )
   const guestSessionId = guestSessionRef.current
@@ -81,7 +86,13 @@ export default function BookingPage() {
         navigate('/scan', {
           state: {
             redirect: '/booking',
-            parking: parking ? { ...parking, scannedQrCode, apiResult } : null,
+            parking: parking
+              ? {
+                  ...parking,
+                  scannedQrCode: scannedQrCode || ticketCtx.scannedQrCode,
+                  apiResult: apiResult || ticketCtx.apiResult,
+                }
+              : null,
           },
         })
         return

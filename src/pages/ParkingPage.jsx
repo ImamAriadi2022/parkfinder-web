@@ -6,8 +6,8 @@ import ParkingList from '../components/pages/ParkingPage/ParkingList'
 import ParkingSearch from '../components/pages/ParkingPage/ParkingSearch'
 import ParkingSlotPanel from '../components/pages/ParkingPage/ParkingSlotPanel'
 import GuestActiveTicketBar from '../components/GuestActiveTicketBar'
-import { GuestService } from '../services/api'
-import { saveVerifiedTicketFromApi } from '../utils/guestTicketStore'
+import { extractTicketId, GuestService } from '../services/api'
+import { getGuestTicketContextForBooking, saveVerifiedTicketFromApi } from '../utils/guestTicketStore'
 import '../styles/pages/ParkingPage.css'
 
 export default function ParkingPage() {
@@ -126,14 +126,31 @@ export default function ParkingPage() {
                      const name = s.slotName || s.slotNumber || s.label
                      return name === selectedSlot
                    })
+                   const ticketCtx = getGuestTicketContextForBooking()
+                   const effectiveApiResult = apiResult || ticketCtx.apiResult
+                   const effectiveQr = scannedQrCode || ticketCtx.scannedQrCode
+                   if (!extractTicketId(effectiveApiResult) && !ticketCtx.ticketId) {
+                     navigate('/scan', {
+                       state: {
+                         redirect: '/parking',
+                         parking: {
+                           ...selected,
+                           slot: selectedSlot,
+                           slotId: slotData?.id,
+                           floor,
+                         },
+                       },
+                     })
+                     return
+                   }
                    navigate('/booking', {
                      state: {
                        ...selected,
                        slot: selectedSlot,
                        slotId: slotData?.id,
                        floor,
-                       scannedQrCode,
-                       apiResult,
+                       scannedQrCode: effectiveQr,
+                       apiResult: effectiveApiResult,
                      },
                    })
                 }}
