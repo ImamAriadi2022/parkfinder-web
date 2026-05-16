@@ -12,6 +12,7 @@ export default function ParkingPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const scannedQrCode = location.state?.scannedQrCode || null
+  const apiResult = location.state?.apiResult || null
 
   const [search, setSearch] = useState('')
   const [selected, setSelected] = useState(location.state?.id ? location.state : null)
@@ -112,7 +113,7 @@ export default function ParkingPage() {
                 onSelectSlot={setSelectedSlot}
                 onBook={() => {
                    const slotData = currentFloor.rawSlots?.find(s => s.slotName === selectedSlot)
-                   navigate('/booking', { state: { ...selected, slot: selectedSlot, slotId: slotData?.id, floor, scannedQrCode } })
+                   navigate('/booking', { state: { ...selected, slot: selectedSlot, slotId: slotData?.id, floor, scannedQrCode, apiResult } })
                 }}
               />
             )}

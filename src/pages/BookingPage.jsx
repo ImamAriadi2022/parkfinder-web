@@ -22,13 +22,30 @@ export default function BookingPage() {
   const [step, setStep] = useState(0)
   const [form, setForm] = useState({ name: '', plate: '', phone: '' })
   const [errors, setErrors] = useState({})
+  const [reservationId, setReservationId] = useState(null)
 
-  // Extract ticketId from apiResult or use scannedQrCode
-  const ticketId = apiResult?.ticketId || apiResult?.data?.ticketId || scannedQrCode
+  // Debug: log all received data
+  console.log('[BookingPage] location.state:', location.state)
+  console.log('[BookingPage] apiResult:', apiResult)
+  console.log('[BookingPage] scannedQrCode:', scannedQrCode)
 
-  // Use guestSessionId from api if available, otherwise generate new ticket code
-  const guestSessionRef = useRef(apiResult?.guestSessionId || apiResult?.data?.guestSessionId || scannedQrCode || `PKF-${Date.now().toString(36).toUpperCase().slice(-8)}`)
+  // Extract ticketId from apiResult (try all possible response shapes)
+  const ticketId = apiResult?.data?.ticketId
+    || apiResult?.ticketId
+    || apiResult?.data?.ticket?.id
+    || scannedQrCode
+
+  // Use guestSessionId from api if available
+  const guestSessionRef = useRef(
+    apiResult?.data?.guestSessionId
+    || apiResult?.guestSessionId
+    || scannedQrCode
+    || `PKF-${Date.now().toString(36).toUpperCase().slice(-8)}`
+  )
   const guestSessionId = guestSessionRef.current
+
+  console.log('[BookingPage] resolved ticketId:', ticketId)
+  console.log('[BookingPage] resolved guestSessionId:', guestSessionId)
 
   const validate = () => {
     const nextErrors = {}
@@ -55,11 +72,16 @@ export default function BookingPage() {
           name: form.name,
           plateNumber: form.plate
         }
+        console.log('[BookingPage] createReservation payload:', payload)
         const res = await GuestService.createReservation(payload)
+        console.log('[BookingPage] createReservation response:', res)
+        
+        const resId = res?.data?.id || res?.data?.reservationId || res?.id
+        setReservationId(resId)
         
         saveBooking({
           ticketCode: guestSessionId,
-          reservationId: res.data?.id,
+          reservationId: resId,
           name: form.name,
           plate: form.plate,
           phone: form.phone,
@@ -111,8 +133,8 @@ export default function BookingPage() {
             ticketCode={guestSessionId}
             form={form}
             parking={parking}
-            onSwap={() => navigate('/swap', { state: { ticketCode: guestSessionId, name: form.name, plate: form.plate, phone: form.phone, parking } })}
-            onCheckout={() => navigate('/checkout', { state: { ticketCode: guestSessionId, name: form.name, plate: form.plate, phone: form.phone, parking } })}
+            onSwap={() => navigate('/swap', { state: { ticketCode: guestSessionId, reservationId, name: form.name, plate: form.plate, phone: form.phone, parking } })}
+            onCheckout={() => navigate('/checkout', { state: { ticketCode: guestSessionId, reservationId, name: form.name, plate: form.plate, phone: form.phone, parking } })}
             onMyBooking={() => navigate('/my-booking')}
             onBookingAgain={() => navigate('/parking')}
             onHome={() => navigate('/')}
