@@ -49,7 +49,7 @@ export default function MyBookingPage() {
       const reservationId = booking.reservationId || booking.ticketCode
       
       // Call API to mark as arrived
-      await GuestService.completeReservation(reservationId)
+      await GuestService.arriveInSlot(reservationId)
       
       // Update local store
       markBookingArrived(booking.ticketCode)
