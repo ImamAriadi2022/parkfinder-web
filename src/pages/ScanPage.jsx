@@ -6,7 +6,13 @@ import ScanBackground from '../components/pages/ScanPage/ScanBackground'
 import ScanFooterBack from '../components/pages/ScanPage/ScanFooterBack'
 import ScanHeader from '../components/pages/ScanPage/ScanHeader'
 import { GuestService } from '../services/api'
+import { saveVerifiedTicketFromApi } from '../utils/guestTicketStore'
 import '../styles/pages/ScanPage.css'
+
+function finishVerifyNavigate(navigate, redirect, parkingData, result, qrCode) {
+  saveVerifiedTicketFromApi(result, qrCode)
+  navigate(redirect, { state: { ...parkingData, apiResult: result, scannedQrCode: qrCode } })
+}
 
 const CDN = 'https://storage.googleapis.com/parkfinderbucket'
 
@@ -86,7 +92,7 @@ export default function ScanPage() {
         }
 
         setTimeout(() => {
-          navigate(redirect, { state: { ...parkingData, apiResult: result, scannedQrCode: finalCode } })
+          finishVerifyNavigate(navigate, redirect, parkingData, result, finalCode)
         }, 1500)
       } catch (err) {
         console.error('[SCAN] verify failed:', err)
@@ -102,7 +108,7 @@ export default function ScanPage() {
             await html5QrCode.stop()
           }
           setTimeout(() => {
-            navigate(redirect, { state: { ...parkingData, apiResult: forceResult, scannedQrCode: finalCode } })
+            finishVerifyNavigate(navigate, redirect, parkingData, forceResult, finalCode)
           }, 1500)
           return
         } catch (forceErr) {
@@ -153,7 +159,7 @@ export default function ScanPage() {
       setScanned(true)
       
       setTimeout(() => {
-        navigate(redirect, { state: { ...parkingData, apiResult: result, scannedQrCode: normalizedCode } })
+        finishVerifyNavigate(navigate, redirect, parkingData, result, normalizedCode)
       }, 1500)
     } catch (err) {
       console.error('[SCAN] manual verify failed:', err)
@@ -166,7 +172,7 @@ export default function ScanPage() {
         scannedRef.current = true;
         setScanned(true)
         setTimeout(() => {
-          navigate(redirect, { state: { ...parkingData, apiResult: forceResult, scannedQrCode: normalizedCode } })
+          finishVerifyNavigate(navigate, redirect, parkingData, forceResult, normalizedCode)
         }, 1500)
         return
       } catch (forceErr) {
@@ -189,7 +195,7 @@ export default function ScanPage() {
       scannedRef.current = true;
       setScanned(true)
       setTimeout(() => {
-        navigate(redirect, { state: { ...parkingData, apiResult: result, scannedQrCode: lastCode } })
+        finishVerifyNavigate(navigate, redirect, parkingData, result, lastCode)
       }, 800)
     } catch (err) {
       setForceLoading(false)

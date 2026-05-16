@@ -73,10 +73,39 @@ export function markBookingArrived(ticketCode) {
   localStorage.setItem(KEY, JSON.stringify(list))
 }
 
-/** Tandai booking sebagai completed (parkir selesai) */
-export function completeBooking(ticketCode) {
+/**
+ * Selesai parkir (PATCH /complete): slot dikosongkan, tiket masih aktif sampai keluar area.
+ */
+export function markParkingCompleted(ticketCode) {
   const list = getBookings().map(b =>
-    b.ticketCode === ticketCode ? { ...b, completed: true, completedAt: new Date().toISOString(), expired: true, expiredAt: new Date().toISOString() } : b
+    b.ticketCode === ticketCode
+      ? {
+          ...b,
+          completed: true,
+          completedAt: new Date().toISOString(),
+        }
+      : b
   )
   localStorage.setItem(KEY, JSON.stringify(list))
+}
+
+/** Keluar dari area parkir: tiket & sesi dinonaktifkan di sisi client */
+export function exitParking(ticketCode) {
+  const list = getBookings().map(b =>
+    b.ticketCode === ticketCode
+      ? {
+          ...b,
+          expired: true,
+          exited: true,
+          exitedAt: new Date().toISOString(),
+          expiredAt: new Date().toISOString(),
+        }
+      : b
+  )
+  localStorage.setItem(KEY, JSON.stringify(list))
+}
+
+/** @deprecated gunakan markParkingCompleted + exitParking */
+export function completeBooking(ticketCode) {
+  markParkingCompleted(ticketCode)
 }

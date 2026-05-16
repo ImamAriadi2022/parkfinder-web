@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Button, Container } from 'react-bootstrap'
 import { useLocation, useNavigate } from 'react-router-dom'
 import BookingConfirmStep from '../components/pages/BookingPage/BookingConfirmStep'
@@ -8,7 +8,9 @@ import BookingStepper from '../components/pages/BookingPage/BookingStepper'
 import BookingSuccessStep from '../components/pages/BookingPage/BookingSuccessStep'
 import { GuestService, extractReservationId, extractTicketId } from '../services/api'
 import '../styles/pages/BookingPage.css'
+import GuestActiveTicketBar from '../components/GuestActiveTicketBar'
 import { saveBooking } from '../utils/bookingStore'
+import { saveVerifiedTicketFromApi } from '../utils/guestTicketStore'
 
 const STEPS = ['Detail Booking', 'Konfirmasi', 'Selesai']
 
@@ -34,6 +36,12 @@ export default function BookingPage() {
   )
   const guestSessionId = guestSessionRef.current
   const slotId = parking?.slotId
+
+  useEffect(() => {
+    if (apiResult && scannedQrCode) {
+      saveVerifiedTicketFromApi(apiResult, scannedQrCode)
+    }
+  }, [apiResult, scannedQrCode])
 
   if (!parking?.id && !parking?.name) {
     return (
@@ -136,6 +144,7 @@ export default function BookingPage() {
       <Container className="py-4">
         <BookingHeader title="Booking Parkir" subtitle="Amankan slot parkir Anda sekarang" />
         <BookingStepper steps={STEPS} step={step} />
+        {step < 2 && <GuestActiveTicketBar className="mb-3" />}
 
         {step === 0 && (
           <BookingFormStep

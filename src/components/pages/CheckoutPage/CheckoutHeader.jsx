@@ -16,7 +16,7 @@ export default function CheckoutHeader({ step, onBack }) {
       <div>
         <h1 className="fw-bold mb-0" style={{ color: 'var(--pf-text)', fontSize: 28 }}>Keluar Parkir</h1>
         <p className="mb-0" style={{ fontSize: 14 }}>
-          {step === 0 ? 'Konfirmasi untuk menonaktifkan tiket Anda' : 'Tiket parkir telah dinonaktifkan'}
+          {step === 0 ? 'Konfirmasi keluar dari area parkir' : 'Tiket telah dinonaktifkan — selamat jalan'}
         </p>
       </div>
     </div>

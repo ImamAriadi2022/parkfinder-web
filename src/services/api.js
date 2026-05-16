@@ -9,6 +9,14 @@ const handleResponse = async (response) => {
   return response.json();
 };
 
+/** Normalisasi guestSessionId dari response verify */
+export function extractGuestSessionId(apiResult, fallbackQr = null) {
+  if (!apiResult || typeof apiResult !== 'object') return fallbackQr || null
+  const d = apiResult.data !== undefined ? apiResult.data : apiResult.message?.data
+  const node = d && typeof d === 'object' ? d : apiResult
+  return node?.guestSessionId || apiResult?.guestSessionId || fallbackQr || null
+}
+
 /** Normalisasi ticketId dari response verify / access */
 export function extractTicketId(apiResult) {
   if (!apiResult || typeof apiResult !== 'object') return null
@@ -91,14 +99,23 @@ export const GuestService = {
     return handleResponse(response);
   },
 
-  cancelTicket: async (ticketId, guestSessionId) => {
-    // Cancel endpoint expect: ticketId dan guestSessionId
+  /**
+   * Batalkan tiket guest (boleh sebelum/sesudah reservasi).
+   * POST /access/cancelTicket — kirim ticketId dan/atau guestSessionId.
+   */
+  cancelTicket: async ({ ticketId, guestSessionId } = {}) => {
+    const body = {}
+    if (ticketId) body.ticketId = ticketId
+    if (guestSessionId) body.guestSessionId = guestSessionId
+    if (!body.ticketId && !body.guestSessionId) {
+      throw new Error('ticketId atau guestSessionId wajib diisi untuk membatalkan tiket')
+    }
     const response = await fetch(`${BASE_URL}/access/cancelTicket`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ ticketId, guestSessionId }),
+      body: JSON.stringify(body),
     });
     return handleResponse(response);
   },

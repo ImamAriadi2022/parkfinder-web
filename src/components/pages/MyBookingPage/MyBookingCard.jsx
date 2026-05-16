@@ -1,6 +1,13 @@
 import { Badge, Button, Card, Col, Row } from 'react-bootstrap'
 
-export default function MyBookingCard({ booking, index, formatDate, onSwap, onCheckout, onCancel, onArrive, cdn }) {
+export default function MyBookingCard({ booking, index, formatDate, onSwap, onCheckout, onCompletePark, onCancel, onArrive, cdn }) {
+  const statusBadge = booking.expired
+    ? { label: 'Tidak Aktif', className: 'badge-expired' }
+    : booking.completed
+      ? { label: 'Menunggu Keluar', className: 'badge-pf-orange' }
+      : booking.arrived
+        ? { label: 'Di Slot', className: 'badge-pf-blue' }
+        : { label: 'Aktif', className: 'badge-pf-green' }
   return (
     <Card
       className={`booking-card animate-fade-up ${booking.expired ? 'booking-card-expired' : 'booking-card-active'}`}
@@ -16,8 +23,8 @@ export default function MyBookingCard({ booking, index, formatDate, onSwap, onCh
                 style={{ height: 22, width: 'auto', objectFit: 'contain', ...(booking.expired ? { filter: 'grayscale(1)', opacity: 0.5 } : {}) }}
                 onError={e => { e.target.style.display = 'none' }}
               />
-              <Badge className={booking.expired ? 'badge-expired' : 'badge-pf-green'}>
-                {booking.expired ? 'Tidak Aktif' : 'Aktif'}
+              <Badge className={statusBadge.className}>
+                {statusBadge.label}
               </Badge>
             </div>
             <div className={`booking-code ${booking.expired ? 'booking-code-expired' : ''}`}>
@@ -42,9 +49,14 @@ export default function MyBookingCard({ booking, index, formatDate, onSwap, onCh
                 </div>
               ))}
             </div>
+            {booking.completedAt && !booking.expired && (
+              <small style={{ color: 'var(--pf-orange)', fontSize: 11, marginTop: 6, display: 'block' }}>
+                ✓ Parkir selesai: {formatDate(booking.completedAt)} — tiket masih aktif
+              </small>
+            )}
             {booking.expired && booking.expiredAt && (
               <small style={{ color: 'var(--pf-red)', fontSize: 11, marginTop: 6, display: 'block' }}>
-                ⏹ Keluar: {formatDate(booking.expiredAt)}
+                ⏹ Keluar area: {formatDate(booking.expiredAt)}
               </small>
             )}
           </Col>
@@ -60,10 +72,22 @@ export default function MyBookingCard({ booking, index, formatDate, onSwap, onCh
                   ✓ Sudah Tiba di Slot
                 </Badge>
               )}
-              <Button size="sm" className="btn-pf-outline btn w-100" onClick={() => onSwap(booking)}>
-                🔄 Tukar Slot
-              </Button>
-              {!booking.arrived && (
+              {!booking.completed && (
+                <Button size="sm" className="btn-pf-outline btn w-100" onClick={() => onSwap(booking)} disabled={!booking.arrived}>
+                  🔄 Tukar Slot
+                </Button>
+              )}
+              {booking.arrived && !booking.completed && (
+                <Button size="sm" className="btn btn-warning w-100 text-dark" onClick={() => onCompletePark?.(booking)}>
+                  🅿️ Selesai Parkir
+                </Button>
+              )}
+              {booking.completed && (
+                <Badge className="badge-pf-orange w-100" style={{ padding: '0.5rem' }}>
+                  Slot sudah dikosongkan
+                </Badge>
+              )}
+              {!booking.arrived && !booking.completed && (
                 <Button
                   size="sm"
                   variant="outline-danger"
@@ -73,7 +97,13 @@ export default function MyBookingCard({ booking, index, formatDate, onSwap, onCh
                   ✕ Batalkan Reservasi
                 </Button>
               )}
-              <Button size="sm" className="btn btn-danger-pf w-100" onClick={() => onCheckout(booking)}>
+              <Button
+                size="sm"
+                className="btn btn-danger-pf w-100"
+                onClick={() => onCheckout(booking)}
+                disabled={!booking.completed}
+                title={!booking.completed ? 'Selesaikan parkir terlebih dahulu' : undefined}
+              >
                 🚗 Keluar Parkir
               </Button>
             </Col>

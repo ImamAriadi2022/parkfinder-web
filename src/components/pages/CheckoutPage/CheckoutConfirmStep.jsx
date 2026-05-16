@@ -13,7 +13,7 @@ export default function CheckoutConfirmStep({ booking, onBack, onConfirm, proces
                 style={{ height: 28, width: 'auto', objectFit: 'contain' }}
                 onError={e => { e.target.style.display = 'none' }}
               />
-              <Badge className="badge-pf-green px-2 py-1">Tiket Aktif</Badge>
+              <Badge className="badge-pf-orange px-2 py-1">Siap Keluar Area</Badge>
             </div>
 
             <div className="checkout-code">{booking.ticketCode}</div>
@@ -46,9 +46,9 @@ export default function CheckoutConfirmStep({ booking, onBack, onConfirm, proces
                 Perhatian!
               </strong>
               <p style={{ margin: 0, fontSize: 14, color: 'var(--pf-text2)', lineHeight: 1.6 }}>
-                Tindakan ini akan <strong style={{ color: 'var(--pf-red)' }}>menonaktifkan tiket secara permanen</strong>.
-                Slot parkir Anda akan dilepas dan tidak dapat diaktifkan kembali.
-                Pastikan kendaraan Anda sudah keluar dari area parkir sebelum melanjutkan.
+                Slot parkir sudah dikosongkan (selesai parkir).
+                Langkah ini akan <strong style={{ color: 'var(--pf-red)' }}>menghapus tiket dan reservasi</strong> setelah Anda keluar dari area.
+                Pastikan kendaraan sudah di jalur keluar / gate sebelum konfirmasi.
               </p>
             </div>
           </div>

@@ -5,7 +5,9 @@ import ParkingHeader from '../components/pages/ParkingPage/ParkingHeader'
 import ParkingList from '../components/pages/ParkingPage/ParkingList'
 import ParkingSearch from '../components/pages/ParkingPage/ParkingSearch'
 import ParkingSlotPanel from '../components/pages/ParkingPage/ParkingSlotPanel'
+import GuestActiveTicketBar from '../components/GuestActiveTicketBar'
 import { GuestService } from '../services/api'
+import { saveVerifiedTicketFromApi } from '../utils/guestTicketStore'
 import '../styles/pages/ParkingPage.css'
 
 export default function ParkingPage() {
@@ -21,6 +23,13 @@ export default function ParkingPage() {
 
   const [parkings, setParkings] = useState([])
   const [floors, setFloors] = useState([])
+  const [ticketBarKey, setTicketBarKey] = useState(0)
+
+  useEffect(() => {
+    if (apiResult && scannedQrCode) {
+      saveVerifiedTicketFromApi(apiResult, scannedQrCode)
+    }
+  }, [apiResult, scannedQrCode])
 
   useEffect(() => {
     GuestService.getAllAreas()
@@ -84,6 +93,7 @@ export default function ParkingPage() {
     <div style={{ paddingTop: 86, minHeight: '100vh' }}>
       <Container className="py-4">
         <ParkingHeader />
+        <GuestActiveTicketBar key={ticketBarKey} onCancelled={() => setTicketBarKey(k => k + 1)} />
         <ParkingSearch search={search} onChange={handleSearch} onClear={() => handleSearch('')} />
 
         <Row className="g-4">

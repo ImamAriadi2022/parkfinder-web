@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Button, Container } from 'react-bootstrap'
-import { expireBooking } from '../utils/bookingStore'
+import { exitParking } from '../utils/bookingStore'
+import { clearVerifiedTicket, getVerifiedTicket } from '../utils/guestTicketStore'
 import { GuestService } from '../services/api'
 import CheckoutConfirmStep from '../components/pages/CheckoutPage/CheckoutConfirmStep'
 import CheckoutHeader from '../components/pages/CheckoutPage/CheckoutHeader'
@@ -34,17 +35,24 @@ export default function CheckoutPage() {
   }
 
   const handleCheckout = async () => {
+    if (!booking.completed) {
+      alert('Selesaikan parkir dulu (tombol "Selesai Parkir") sebelum keluar area. Slot harus dikosongkan terlebih dahulu.')
+      return
+    }
+
     setProcessing(true)
     try {
-      if (booking.reservationId) {
-        await GuestService.completeReservation(booking.reservationId)
-      }
-      expireBooking(booking.ticketCode)
-      setProcessing(false)
+      const stored = getVerifiedTicket()
+      const ticketId = booking.ticketId || stored?.ticketId
+      const guestSessionId = booking.ticketCode || stored?.guestSessionId || stored?.qrCode
+      await GuestService.cancelTicket({ ticketId, guestSessionId })
+      clearVerifiedTicket()
+      exitParking(booking.ticketCode)
       setStep(1)
     } catch (err) {
-      console.error("Gagal checkout:", err)
-      alert(err.message || "Gagal melakukan proses keluar parkir")
+      console.error('Gagal keluar parkir:', err)
+      alert(err.message || 'Gagal memproses keluar dari area parkir')
+    } finally {
       setProcessing(false)
     }
   }
