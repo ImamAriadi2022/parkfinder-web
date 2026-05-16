@@ -92,13 +92,24 @@ a { text-decoration: none; }
 
 /* ── Navbar override ── */
 .navbar-pf {
-  background: transparent !important;
+  /* Default navbar should have a subtle solid background for readability */
+  background: rgba(13,22,40,0.96) !important;
   transition: background 0.3s, box-shadow 0.3s, backdrop-filter 0.3s;
+  box-shadow: 0 1px 0 var(--pf-border);
 }
 .navbar-pf.scrolled {
   background: rgba(13,22,40,0.88) !important;
   backdrop-filter: blur(16px);
   box-shadow: 0 1px 0 var(--pf-border);
+}
+
+/* Mobile: make navbar fully opaque and remove heavy backdrop blur for performance/readability */
+@media (max-width: 768px) {
+  .navbar-pf {
+    background: var(--pf-bg2) !important;
+    backdrop-filter: none !important;
+    box-shadow: 0 1px 0 var(--pf-border);
+  }
 }
 .navbar-pf .nav-link {
   color: var(--pf-text2) !important; font-weight: 500;
