@@ -9,7 +9,7 @@ import MyBookingStats from '../components/pages/MyBookingPage/MyBookingStats'
 import { GuestService } from '../services/api'
 import '../styles/pages/MyBookingPage.css'
 import { cancelBooking, getBookings, markBookingArrived, markParkingCompleted } from '../utils/bookingStore'
-import { hasActiveGuestTicket } from '../utils/guestTicketStore'
+import { hasActiveGuestTicket, saveVerifiedTicket } from '../utils/guestTicketStore'
 
 const CDN = 'https://storage.googleapis.com/parkfinderbucket'
 
@@ -100,6 +100,13 @@ export default function MyBookingPage() {
     try {
       await GuestService.cancelReservation(booking.reservationId)
       cancelBooking(booking.ticketCode)
+      if (!hasActiveGuestTicket()) {
+        saveVerifiedTicket({
+          ticketId: booking.ticketId || null,
+          guestSessionId: booking.ticketCode || booking.reservationId || null,
+          qrCode: booking.ticketCode || booking.ticketId || booking.reservationId || null,
+        })
+      }
       reload()
       alert('✓ Reservasi berhasil dibatalkan.')
     } catch (error) {
