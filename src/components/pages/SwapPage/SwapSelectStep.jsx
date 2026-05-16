@@ -12,7 +12,13 @@ export default function SwapSelectStep({
   onSelectSlot,
   onNext,
 }) {
-  const currentFloor = floors.find(item => item.id === floor) || floors[1]
+  // Jangan pakai floors[1] — jika hanya ada satu lantai atau floors kosong, itu undefined dan bikin crash (layar hitam).
+  const currentFloor = floors.find(item => item.id === floor) || {
+    id: floor || '—',
+    slots: [],
+    available: [],
+    rawSlots: [],
+  }
   const progressVariant = (occupancy) => occupancy >= 90 ? 'danger' : occupancy >= 75 ? 'warning' : 'info'
 
   return (

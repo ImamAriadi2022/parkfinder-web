@@ -13,6 +13,21 @@ import '../styles/pages/SwapPage.css'
 
 const SWAP_STEPS = ['Pilih Slot Baru', 'Konfirmasi Tukar', 'Selesai']
 
+/** Backend kadang { success, data }, kadang array/object langsung — supaya swap tidak kosong di produksi */
+function unwrapList(res) {
+  if (res == null) return null
+  if (Array.isArray(res)) return res
+  if (Array.isArray(res?.data)) return res.data
+  if (res?.success !== false && res?.data != null) return res.data
+  return null
+}
+
+function unwrapArea(res) {
+  const raw = unwrapList(res) ?? res
+  if (raw && typeof raw === 'object' && !Array.isArray(raw)) return raw
+  return null
+}
+
 export default function SwapPage() {
   const navigate = useNavigate()
   const location = useLocation()
@@ -35,8 +50,8 @@ export default function SwapPage() {
     if (booking?.parking?.id) {
       GuestService.getAreaById(booking.parking.id)
         .then(res => {
-          if (res.success && res.data) {
-            const p = res.data;
+          const p = unwrapArea(res)
+          if (p?.id) {
             const formatted = {
               id: p.id,
               name: p.name,
@@ -60,24 +75,36 @@ export default function SwapPage() {
     if (selectedParking?.id) {
       GuestService.getAllSlotsInArea(selectedParking.id)
         .then(res => {
-          if (res.success && res.data) {
-            const floorGroups = {}
-            res.data.forEach(slot => {
-              const f = `L${slot.floor}`
-              if (!floorGroups[f]) floorGroups[f] = { id: f, slots: [], available: [], rawSlots: [] }
-              floorGroups[f].slots.push(slot.slotName)
-              // Only consider available if it's not the user's current slot
-              floorGroups[f].available.push(slot.appStatus === 'available')
-              floorGroups[f].rawSlots.push(slot)
-            })
-            const floorArr = Object.values(floorGroups).sort((a,b) => a.id.localeCompare(b.id))
-            setFloors(floorArr)
-            if (floorArr.length > 0) {
-              setFloor(floorArr[0].id)
-            }
+          const list = unwrapList(res)
+          if (!Array.isArray(list)) {
+            setFloors([])
+            setFloor('')
+            return
+          }
+          const floorGroups = {}
+          list.forEach(slot => {
+            const f = `L${slot.floor}`
+            if (!floorGroups[f]) floorGroups[f] = { id: f, slots: [], available: [], rawSlots: [] }
+            const name = slot.slotName || slot.slotNumber || slot.label || String(slot.id ?? '')
+            if (!name) return
+            floorGroups[f].slots.push(name)
+            const st = String(slot.appStatus || slot.status || '').toLowerCase()
+            floorGroups[f].available.push(st === 'available')
+            floorGroups[f].rawSlots.push(slot)
+          })
+          const floorArr = Object.values(floorGroups).sort((a,b) => a.id.localeCompare(b.id))
+          setFloors(floorArr)
+          if (floorArr.length > 0) {
+            setFloor(floorArr[0].id)
+          } else {
+            setFloor('')
           }
         })
-        .catch(err => console.error("Error fetching slots", err))
+        .catch(err => {
+          console.error("Error fetching slots", err)
+          setFloors([])
+          setFloor('')
+        })
     }
   }, [selectedParking])
 
@@ -100,14 +127,23 @@ export default function SwapPage() {
     setSwapping(true)
     try {
       const currentFloorData = floors.find(f => f.id === floor)
-      const slotData = currentFloorData?.rawSlots?.find(s => s.slotName === newSlot)
+      const slotData = currentFloorData?.rawSlots?.find(s => {
+        const name = s.slotName || s.slotNumber || s.label || String(s.id ?? '')
+        return name === newSlot
+      })
       
-      if (booking.reservationId && slotData?.id) {
-        await GuestService.swapSlot(booking.reservationId, slotData.id)
+      if (!booking.reservationId) {
+        throw new Error('ID reservasi tidak ada. Buat booking ulang lalu coba tukar slot lagi.')
       }
+      if (!slotData?.id) {
+        throw new Error('Slot tujuan tidak valid. Kembali dan pilih slot lagi.')
+      }
+
+      await GuestService.swapSlot(booking.reservationId, slotData.id)
       
       updateBooking(booking.ticketCode, { 
         ticketCode: newTicketCode, 
+        reservationId: booking.reservationId,
         parking: { ...booking.parking, slot: newSlot, floor } 
       })
       

@@ -36,7 +36,16 @@ export default function MyBookingPage() {
   }
 
   const handleSwap = (booking) => {
-    navigate('/swap', { state: { ticketCode: booking.ticketCode, name: booking.name, plate: booking.plate, phone: booking.phone, parking: booking.parking } })
+    navigate('/swap', {
+      state: {
+        ticketCode: booking.ticketCode,
+        reservationId: booking.reservationId,
+        name: booking.name,
+        plate: booking.plate,
+        phone: booking.phone,
+        parking: booking.parking,
+      },
+    })
   }
 
   const handleCheckout = (booking) => {
