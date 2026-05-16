@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { Container } from 'react-bootstrap'
-import { getBookings } from '../utils/bookingStore'
+import { useNavigate } from 'react-router-dom'
 import MyBookingEmptyState from '../components/pages/MyBookingPage/MyBookingEmptyState'
 import MyBookingFilters from '../components/pages/MyBookingPage/MyBookingFilters'
 import MyBookingHeader from '../components/pages/MyBookingPage/MyBookingHeader'
 import MyBookingList from '../components/pages/MyBookingPage/MyBookingList'
 import MyBookingStats from '../components/pages/MyBookingPage/MyBookingStats'
+import { GuestService } from '../services/api'
 import '../styles/pages/MyBookingPage.css'
+import { getBookings, markBookingArrived } from '../utils/bookingStore'
 
 const CDN = 'https://storage.googleapis.com/parkfinderbucket'
 
@@ -42,6 +43,31 @@ export default function MyBookingPage() {
     navigate('/checkout', { state: { ticketCode: booking.ticketCode, name: booking.name, plate: booking.plate, phone: booking.phone, parking: booking.parking } })
   }
 
+  const handleArrive = async (booking) => {
+    try {
+      // Check if booking has reservationId, if not use ticketCode as fallback
+      const reservationId = booking.reservationId || booking.ticketCode
+      
+      // Call API to mark as arrived
+      await GuestService.completeReservation(reservationId)
+      
+      // Update local store
+      markBookingArrived(booking.ticketCode)
+      
+      // Reload bookings
+      reload()
+      
+      // Show success message
+      alert('✓ Anda sudah tiba di slot parkir!')
+    } catch (error) {
+      console.error('Error marking as arrived:', error)
+      // Even if API fails, mark locally so user can continue
+      markBookingArrived(booking.ticketCode)
+      reload()
+      alert('✓ Status diperbarui (offline)')
+    }
+  }
+
   return (
     <div style={{ paddingTop: 86, minHeight: '100vh' }}>
       <Container className="py-4">
@@ -56,6 +82,7 @@ export default function MyBookingPage() {
             bookings={displayed}
             onSwap={handleSwap}
             onCheckout={handleCheckout}
+            onArrive={handleArrive}
             formatDate={fmtDate}
             cdn={CDN}
           />

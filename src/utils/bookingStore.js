@@ -48,3 +48,19 @@ export function updateBooking(oldTicketCode, updatedBooking) {
 export function getActiveBookings() {
   return getBookings().filter(b => !b.expired)
 }
+
+/** Tandai booking sebagai arrived (sudah sampai di slot) */
+export function markBookingArrived(ticketCode) {
+  const list = getBookings().map(b =>
+    b.ticketCode === ticketCode ? { ...b, arrived: true, arrivedAt: new Date().toISOString() } : b
+  )
+  localStorage.setItem(KEY, JSON.stringify(list))
+}
+
+/** Tandai booking sebagai completed (parkir selesai) */
+export function completeBooking(ticketCode) {
+  const list = getBookings().map(b =>
+    b.ticketCode === ticketCode ? { ...b, completed: true, completedAt: new Date().toISOString(), expired: true, expiredAt: new Date().toISOString() } : b
+  )
+  localStorage.setItem(KEY, JSON.stringify(list))
+}

@@ -1,6 +1,6 @@
 import MyBookingCard from './MyBookingCard'
 
-export default function MyBookingList({ bookings, onSwap, onCheckout, formatDate, cdn }) {
+export default function MyBookingList({ bookings, onSwap, onCheckout, onArrive, formatDate, cdn }) {
   return (
     <div className="d-flex flex-column gap-3">
       {bookings.map((booking, index) => (
@@ -10,6 +10,7 @@ export default function MyBookingList({ bookings, onSwap, onCheckout, formatDate
           index={index}
           onSwap={onSwap}
           onCheckout={onCheckout}
+          onArrive={onArrive}
           formatDate={formatDate}
           cdn={cdn}
         />

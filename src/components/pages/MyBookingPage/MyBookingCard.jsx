@@ -1,6 +1,6 @@
 import { Badge, Button, Card, Col, Row } from 'react-bootstrap'
 
-export default function MyBookingCard({ booking, index, formatDate, onSwap, onCheckout, cdn }) {
+export default function MyBookingCard({ booking, index, formatDate, onSwap, onCheckout, onArrive, cdn }) {
   return (
     <Card
       className={`booking-card animate-fade-up ${booking.expired ? 'booking-card-expired' : 'booking-card-active'}`}
@@ -51,6 +51,15 @@ export default function MyBookingCard({ booking, index, formatDate, onSwap, onCh
 
           {!booking.expired && (
             <Col xs={12} md={3} className="d-flex flex-column gap-2">
+              {!booking.arrived ? (
+                <Button size="sm" className="btn btn-success w-100" onClick={() => onArrive?.(booking)} style={{ backgroundColor: '#28a745', borderColor: '#28a745' }}>
+                  ✓ Sudah Sampai
+                </Button>
+              ) : (
+                <Badge className="badge-pf-blue w-100" style={{ padding: '0.5rem', backgroundColor: '#007bff' }}>
+                  ✓ Sudah Tiba di Slot
+                </Badge>
+              )}
               <Button size="sm" className="btn-pf-outline btn w-100" onClick={() => onSwap(booking)}>
                 🔄 Tukar Slot
               </Button>
