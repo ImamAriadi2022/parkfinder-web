@@ -8,7 +8,7 @@ import MyBookingList from '../components/pages/MyBookingPage/MyBookingList'
 import MyBookingStats from '../components/pages/MyBookingPage/MyBookingStats'
 import { GuestService } from '../services/api'
 import '../styles/pages/MyBookingPage.css'
-import { getBookings, markBookingArrived } from '../utils/bookingStore'
+import { cancelBooking, getBookings, markBookingArrived } from '../utils/bookingStore'
 
 const CDN = 'https://storage.googleapis.com/parkfinderbucket'
 
@@ -49,7 +49,34 @@ export default function MyBookingPage() {
   }
 
   const handleCheckout = (booking) => {
-    navigate('/checkout', { state: { ticketCode: booking.ticketCode, name: booking.name, plate: booking.plate, phone: booking.phone, parking: booking.parking } })
+    navigate('/checkout', {
+      state: {
+        ticketCode: booking.ticketCode,
+        reservationId: booking.reservationId,
+        name: booking.name,
+        plate: booking.plate,
+        phone: booking.phone,
+        parking: booking.parking,
+      },
+    })
+  }
+
+  const handleCancel = async (booking) => {
+    if (!booking.reservationId) {
+      alert('ID reservasi tidak ada. Booking lama tidak bisa dibatalkan lewat API — hapus dari daftar atau buat booking baru.')
+      return
+    }
+    if (!window.confirm('Batalkan reservasi parkir ini? Slot akan dilepas.')) return
+
+    try {
+      await GuestService.cancelReservation(booking.reservationId)
+      cancelBooking(booking.ticketCode)
+      reload()
+      alert('✓ Reservasi berhasil dibatalkan.')
+    } catch (error) {
+      console.error('Error cancel reservation:', error)
+      alert(error?.message || 'Gagal membatalkan reservasi.')
+    }
   }
 
   const handleArrive = async (booking) => {
@@ -87,6 +114,7 @@ export default function MyBookingPage() {
             bookings={displayed}
             onSwap={handleSwap}
             onCheckout={handleCheckout}
+            onCancel={handleCancel}
             onArrive={handleArrive}
             formatDate={fmtDate}
             cdn={CDN}

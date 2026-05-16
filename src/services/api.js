@@ -9,6 +9,20 @@ const handleResponse = async (response) => {
   return response.json();
 };
 
+/** Normalisasi ticketId dari response verify / access */
+export function extractTicketId(apiResult) {
+  if (!apiResult || typeof apiResult !== 'object') return null
+  const d = apiResult.data !== undefined ? apiResult.data : apiResult.message?.data
+  const node = d && typeof d === 'object' ? d : apiResult
+  return (
+    node?.ticketId
+    || node?.ticket?.id
+    || node?.ticket?.ticketId
+    || apiResult?.ticketId
+    || null
+  )
+}
+
 /** Normalisasi ID reservasi dari berbagai bentuk response backend */
 export function extractReservationId(res) {
   if (!res || typeof res !== 'object') return null

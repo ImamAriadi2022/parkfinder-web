@@ -112,8 +112,20 @@ export default function ParkingPage() {
                 selectedSlot={selectedSlot}
                 onSelectSlot={setSelectedSlot}
                 onBook={() => {
-                   const slotData = currentFloor.rawSlots?.find(s => s.slotName === selectedSlot)
-                   navigate('/booking', { state: { ...selected, slot: selectedSlot, slotId: slotData?.id, floor, scannedQrCode, apiResult } })
+                   const slotData = currentFloor.rawSlots?.find(s => {
+                     const name = s.slotName || s.slotNumber || s.label
+                     return name === selectedSlot
+                   })
+                   navigate('/booking', {
+                     state: {
+                       ...selected,
+                       slot: selectedSlot,
+                       slotId: slotData?.id,
+                       floor,
+                       scannedQrCode,
+                       apiResult,
+                     },
+                   })
                 }}
               />
             )}

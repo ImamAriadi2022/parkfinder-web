@@ -28,6 +28,22 @@ export function saveBooking(booking) {
   localStorage.setItem(KEY, JSON.stringify(list))
 }
 
+/** Batalkan booking (setelah PATCH /reservations/:id/cancel) */
+export function cancelBooking(ticketCode) {
+  const list = getBookings().map(b =>
+    b.ticketCode === ticketCode
+      ? {
+          ...b,
+          cancelled: true,
+          expired: true,
+          cancelledAt: new Date().toISOString(),
+          expiredAt: new Date().toISOString(),
+        }
+      : b
+  )
+  localStorage.setItem(KEY, JSON.stringify(list))
+}
+
 /** Tandai booking sebagai tidak aktif (expired) */
 export function expireBooking(ticketCode) {
   const list = getBookings().map(b =>

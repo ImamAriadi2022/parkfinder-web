@@ -1,12 +1,27 @@
 import { Button, Card, Col, Row } from 'react-bootstrap'
 
-export default function BookingConfirmStep({ form, parking, onBack, onConfirm }) {
+export default function BookingConfirmStep({ form, parking, onBack, onConfirm, submitting, hasTicket }) {
   return (
     <Row className="justify-content-center animate-fade-up">
       <Col lg={7}>
         <Card>
           <Card.Body className="p-4">
             <h5 className="mb-4" style={{ color: 'var(--pf-text)' }}>Konfirmasi Booking</h5>
+            {!hasTicket && (
+              <div
+                className="mb-3"
+                style={{
+                  padding: '10px 14px',
+                  borderRadius: 10,
+                  background: 'rgba(255,167,38,0.1)',
+                  border: '1px solid rgba(255,167,38,0.35)',
+                  fontSize: 13,
+                  color: 'var(--pf-orange)',
+                }}
+              >
+                ⚠️ Tiket belum diverifikasi. Anda akan diarahkan ke halaman scan saat konfirmasi.
+              </div>
+            )}
             {[
               ['Nama',   form.name],
               ['Plat',   form.plate],
@@ -21,8 +36,10 @@ export default function BookingConfirmStep({ form, parking, onBack, onConfirm })
             ))}
 
             <div className="d-flex gap-3 justify-content-end mt-4">
-              <Button className="btn-pf-ghost btn" onClick={onBack}>← Kembali</Button>
-              <Button className="btn-pf-primary btn" onClick={onConfirm}>Konfirmasi Booking</Button>
+              <Button className="btn-pf-ghost btn" onClick={onBack} disabled={submitting}>← Kembali</Button>
+              <Button className="btn-pf-primary btn" onClick={onConfirm} disabled={submitting}>
+                {submitting ? 'Memproses...' : 'Konfirmasi Booking'}
+              </Button>
             </div>
           </Card.Body>
         </Card>
