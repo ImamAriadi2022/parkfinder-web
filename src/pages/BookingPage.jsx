@@ -6,7 +6,7 @@ import BookingFormStep from '../components/pages/BookingPage/BookingFormStep'
 import BookingHeader from '../components/pages/BookingPage/BookingHeader'
 import BookingStepper from '../components/pages/BookingPage/BookingStepper'
 import BookingSuccessStep from '../components/pages/BookingPage/BookingSuccessStep'
-import { GuestService } from '../services/api'
+import { GuestService, extractReservationId } from '../services/api'
 import '../styles/pages/BookingPage.css'
 import { saveBooking } from '../utils/bookingStore'
 
@@ -75,8 +75,13 @@ export default function BookingPage() {
         console.log('[BookingPage] createReservation payload:', payload)
         const res = await GuestService.createReservation(payload)
         console.log('[BookingPage] createReservation response:', res)
-        
-        const resId = res?.data?.id || res?.data?.reservationId || res?.id
+
+        const resId = extractReservationId(res)
+        if (!resId) {
+          console.error('[BookingPage] createReservation: tidak ada reservation id di response', res)
+          alert('Booking tersimpan di server tapi sistem tidak menerima ID reservasi. Coba lagi atau hubungi admin.')
+          return
+        }
         setReservationId(resId)
         
         saveBooking({

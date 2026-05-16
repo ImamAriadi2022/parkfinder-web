@@ -9,6 +9,21 @@ const handleResponse = async (response) => {
   return response.json();
 };
 
+/** Normalisasi ID reservasi dari berbagai bentuk response backend */
+export function extractReservationId(res) {
+  if (!res || typeof res !== 'object') return null
+  const d = res.data !== undefined ? res.data : res.message?.data
+  const node = d && typeof d === 'object' ? d : res
+  return (
+    node?.id
+    || node?.reservationId
+    || node?.reservation?.id
+    || res?.id
+    || res?.reservationId
+    || null
+  )
+}
+
 export const GuestService = {
   // --- Guest Access APIs ---
 

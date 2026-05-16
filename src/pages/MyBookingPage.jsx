@@ -44,27 +44,23 @@ export default function MyBookingPage() {
   }
 
   const handleArrive = async (booking) => {
+    const reservationId = booking.reservationId
+    if (!reservationId) {
+      alert(
+        'ID reservasi tidak ada di data booking ini (mungkin booking lama sebelum integrasi API). ' +
+          'Buat booking ulang dari alur parkir, lalu tekan "sudah sampai" lagi.'
+      )
+      return
+    }
+
     try {
-      // Check if booking has reservationId, if not use ticketCode as fallback
-      const reservationId = booking.reservationId || booking.ticketCode
-      
-      // Call API to mark as arrived
       await GuestService.arriveInSlot(reservationId)
-      
-      // Update local store
       markBookingArrived(booking.ticketCode)
-      
-      // Reload bookings
       reload()
-      
-      // Show success message
       alert('✓ Anda sudah tiba di slot parkir!')
     } catch (error) {
       console.error('Error marking as arrived:', error)
-      // Even if API fails, mark locally so user can continue
-      markBookingArrived(booking.ticketCode)
-      reload()
-      alert('✓ Status diperbarui (offline)')
+      alert(error?.message || 'Gagal mengirim konfirmasi ke server. Periksa jaringan atau coba lagi.')
     }
   }
 
