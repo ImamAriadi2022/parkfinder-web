@@ -17,8 +17,12 @@ export default function LandingFooter({ cdn, onNavigate }) {
             <p style={{ fontSize: 14 }}>Solusi parkir cerdas untuk kota modern.</p>
           </Col>
           <Col md={3}>
-            <h6 style={{ color: 'var(--pf-text)' }}>Layanan</h6>
-            {[['Scan Tiket', '/scan'], ['Cari Parkir', '/parking'], ['Booking', '/booking']].map(([label, path]) => (
+            <h6 style={{ color: 'var(--pf-text)' }}>Jelajahi</h6>
+            {[
+              ['Tentang Project', '/tentang-project'],
+              ['Download Mobile', '/download-mobile'],
+              ['Coba Sekarang', '/parking'],
+            ].map(([label, path]) => (
               <div key={label}>
                 <Button
                   variant="link"

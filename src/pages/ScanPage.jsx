@@ -6,8 +6,8 @@ import ScanBackground from '../components/pages/ScanPage/ScanBackground'
 import ScanFooterBack from '../components/pages/ScanPage/ScanFooterBack'
 import ScanHeader from '../components/pages/ScanPage/ScanHeader'
 import { GuestService } from '../services/api'
-import { saveVerifiedTicketFromApi } from '../utils/guestTicketStore'
 import '../styles/pages/ScanPage.css'
+import { saveVerifiedTicketFromApi } from '../utils/guestTicketStore'
 
 function finishVerifyNavigate(navigate, redirect, parkingData, result, qrCode) {
   saveVerifiedTicketFromApi(result, qrCode)
@@ -283,7 +283,7 @@ export default function ScanPage() {
               )}
             </div>
 
-            <ScanFooterBack onBack={() => navigate('/')} />
+            <ScanFooterBack onBack={() => navigate('/parking')} />
           </Col>
         </Row>
       </Container>

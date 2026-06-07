@@ -19,7 +19,7 @@ function HeroCarFallback() {
   )
 }
 
-export default function LandingHero({ onPrimaryCta, onSecondaryCta, onScanCta }) {
+export default function LandingHero({ onPrimaryCta }) {
   return (
     <section className="hero-section">
       <div className="hero-bg">
@@ -42,33 +42,19 @@ export default function LandingHero({ onPrimaryCta, onSecondaryCta, onScanCta })
               </h1>
 
               <p className="hero-desc mb-4">
-                ParkFinder membantu Anda menemukan dan memesan slot parkir
-                secara <strong>real-time</strong>. Amankan tempat sebelum tiba —
-                cepat, mudah, dan terpercaya.
+                ParkFinder adalah platform smart parking untuk membantu pengendara
+                menemukan, memesan, dan mengelola parkir dengan lebih cepat.
+                Jelajahi solusi kami lalu lanjut ke web app saat Anda siap.
               </p>
 
-              {/* CTA Buttons */}
+              {/* CTA Button */}
               <div className="d-flex flex-wrap gap-3">
                 <Button
                   className="btn-pf-primary btn btn-lg"
                   onClick={onPrimaryCta}
                   id="hero-cta-primary"
                 >
-                  Pesan Parkir Sekarang
-                </Button>
-                <Button
-                  className="btn-pf-outline btn btn-lg"
-                  onClick={onSecondaryCta}
-                  id="hero-cta-secondary"
-                >
-                  Lihat Slot Tersedia
-                </Button>
-                <Button
-                  className="btn-pf-ghost btn btn-lg"
-                  onClick={onScanCta}
-                  id="hero-cta-scan"
-                >
-                  Scan Tiket
+                  Coba Sekarang
                 </Button>
               </div>
             </div>

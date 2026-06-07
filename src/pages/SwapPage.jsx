@@ -1,15 +1,15 @@
-import { useState, useEffect } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import { Button, Container } from 'react-bootstrap'
-import { GuestService } from '../services/api'
-import { updateBooking } from '../utils/bookingStore'
+import { useLocation, useNavigate } from 'react-router-dom'
 import SwapConfirmStep from '../components/pages/SwapPage/SwapConfirmStep'
 import SwapCurrentAlert from '../components/pages/SwapPage/SwapCurrentAlert'
 import SwapHeader from '../components/pages/SwapPage/SwapHeader'
 import SwapSelectStep from '../components/pages/SwapPage/SwapSelectStep'
 import SwapStepper from '../components/pages/SwapPage/SwapStepper'
 import SwapSuccessStep from '../components/pages/SwapPage/SwapSuccessStep'
+import { GuestService } from '../services/api'
 import '../styles/pages/SwapPage.css'
+import { updateBooking } from '../utils/bookingStore'
 
 const SWAP_STEPS = ['Pilih Slot Baru', 'Konfirmasi Tukar', 'Selesai']
 
@@ -217,7 +217,7 @@ export default function SwapPage() {
             floor={floor}
             newSlot={newSlot}
             newTicketCode={newTicketCode}
-            onGoHome={() => navigate('/')}
+            onGoHome={() => navigate('/parking')}
           />
         )}
       </Container>

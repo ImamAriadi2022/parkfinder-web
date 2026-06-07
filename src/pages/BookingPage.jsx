@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Button, Container } from 'react-bootstrap'
 import { useLocation, useNavigate } from 'react-router-dom'
+import GuestActiveTicketBar from '../components/GuestActiveTicketBar'
 import BookingConfirmStep from '../components/pages/BookingPage/BookingConfirmStep'
 import BookingFormStep from '../components/pages/BookingPage/BookingFormStep'
 import BookingHeader from '../components/pages/BookingPage/BookingHeader'
@@ -8,7 +9,6 @@ import BookingStepper from '../components/pages/BookingPage/BookingStepper'
 import BookingSuccessStep from '../components/pages/BookingPage/BookingSuccessStep'
 import { GuestService, extractReservationId, extractTicketId } from '../services/api'
 import '../styles/pages/BookingPage.css'
-import GuestActiveTicketBar from '../components/GuestActiveTicketBar'
 import { saveBooking } from '../utils/bookingStore'
 import { getGuestTicketContextForBooking, getVerifiedTicket, saveVerifiedTicketFromApi } from '../utils/guestTicketStore'
 
@@ -187,7 +187,7 @@ export default function BookingPage() {
             onSwap={() => navigate('/swap', { state: { ticketCode: guestSessionId, reservationId, name: form.name, plate: form.plate, phone: form.phone, parking } })}
             onCheckout={() => navigate('/checkout', { state: { ticketCode: guestSessionId, reservationId, name: form.name, plate: form.plate, phone: form.phone, parking } })}
             onMyBooking={() => navigate('/my-booking')}
-            onHome={() => navigate('/')}
+            onHome={() => navigate('/parking')}
           />
         )}
       </Container>

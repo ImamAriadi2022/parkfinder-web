@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { Badge, Button, Container, Nav, Navbar } from 'react-bootstrap'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { Navbar, Nav, Container, Button, Badge } from 'react-bootstrap'
-import { getActiveBookings } from '../utils/bookingStore'
 import { useTheme } from '../context/ThemeContext'
+import { getActiveBookings } from '../utils/bookingStore'
 
 const CDN = 'https://storage.googleapis.com/parkfinderbucket'
 
@@ -50,7 +50,7 @@ export default function AppNavbar() {
   }
 
   const NAV_LINKS = [
-    { to: '/',           label: 'Beranda',        end: true },
+    { to: '/',           label: 'Kembali ke Beranda', end: false },
     { to: '/scan',       label: 'Scan Tiket',     end: false },
     { to: '/parking',    label: 'Cari Parkir',    end: false },
     { to: '/my-booking', label: 'Parkiran Aktif', end: false, badge: activeCount },
@@ -67,7 +67,7 @@ export default function AppNavbar() {
       <Container>
         {/* Brand */}
         <Navbar.Brand
-          onClick={() => handleNav('/')}
+          onClick={() => handleNav('/parking')}
           style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10 }}
         >
           <img

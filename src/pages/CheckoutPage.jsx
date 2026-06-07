@@ -1,14 +1,14 @@
 import { useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
 import { Button, Container } from 'react-bootstrap'
-import { exitParking } from '../utils/bookingStore'
-import { clearVerifiedTicket, getVerifiedTicket } from '../utils/guestTicketStore'
-import { GuestService } from '../services/api'
+import { useLocation, useNavigate } from 'react-router-dom'
 import CheckoutConfirmStep from '../components/pages/CheckoutPage/CheckoutConfirmStep'
 import CheckoutHeader from '../components/pages/CheckoutPage/CheckoutHeader'
 import CheckoutStepper from '../components/pages/CheckoutPage/CheckoutStepper'
 import CheckoutSuccessStep from '../components/pages/CheckoutPage/CheckoutSuccessStep'
+import { GuestService } from '../services/api'
 import '../styles/pages/CheckoutPage.css'
+import { exitParking } from '../utils/bookingStore'
+import { clearVerifiedTicket, getVerifiedTicket } from '../utils/guestTicketStore'
 
 const CHECKOUT_STEPS = ['Konfirmasi Keluar', 'Selesai']
 
@@ -28,7 +28,7 @@ export default function CheckoutPage() {
           <div style={{ fontSize: 56, marginBottom: 16 }}>⚠️</div>
           <h3 style={{ color: 'var(--pf-text)' }}>Tidak Ada Tiket Aktif</h3>
           <p className="mb-4">Anda tidak memiliki tiket parkir aktif untuk diproses.</p>
-          <Button className="btn-pf-primary btn" onClick={() => navigate('/')}>Ke Beranda</Button>
+          <Button className="btn-pf-primary btn" onClick={() => navigate('/parking')}>Ke Beranda</Button>
         </Container>
       </div>
     )
@@ -76,7 +76,7 @@ export default function CheckoutPage() {
           <CheckoutSuccessStep
             booking={booking}
             checkoutTime={checkoutTime}
-            onHome={() => navigate('/')}
+            onHome={() => navigate('/parking')}
           />
         )}
       </Container>

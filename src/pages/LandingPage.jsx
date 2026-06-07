@@ -1,13 +1,10 @@
-import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import LandingDownloadCta from '../components/pages/LandingPage/LandingDownloadCta'
 import LandingFeatures from '../components/pages/LandingPage/LandingFeatures'
 import LandingFooter from '../components/pages/LandingPage/LandingFooter'
 import LandingHero from '../components/pages/LandingPage/LandingHero'
-import LandingParkings from '../components/pages/LandingPage/LandingParkings'
 import LandingStats from '../components/pages/LandingPage/LandingStats'
 import LandingSteps from '../components/pages/LandingPage/LandingSteps'
-import { GuestService } from '../services/api'
 import '../styles/pages/LandingPage.css'
 
 const CDN = 'https://storage.googleapis.com/parkfinderbucket'
@@ -54,41 +51,13 @@ const STEPS = [
 
 export default function LandingPage() {
   const navigate = useNavigate()
-  const [parkings, setParkings] = useState([])
-
-  useEffect(() => {
-    GuestService.getAllAreas()
-      .then(res => {
-        if (res.success && res.data) {
-          const formatted = res.data.slice(0, 3).map(p => ({
-            id: p.id,
-            name: p.name,
-            occupancy: p.totalSlots > 0 ? Math.round(((p.totalSlots - p.availableSlots) / p.totalSlots) * 100) : 0,
-            slots: `${p.availableSlots}/${p.totalSlots} Kosong`,
-            distance: '1.2 km',
-            tag: p.availableSlots > 0 ? (p.availableSlots < p.totalSlots * 0.2 ? 'Ramai' : 'Tersedia') : 'Penuh',
-            tagClass: p.availableSlots > 0 ? (p.availableSlots < p.totalSlots * 0.2 ? 'orange' : 'green') : 'red',
-            variant: p.availableSlots > 0 ? (p.availableSlots < p.totalSlots * 0.2 ? 'warning' : 'info') : 'danger',
-          }))
-          setParkings(formatted)
-        }
-      })
-      .catch(err => console.error('Error fetching areas', err))
-  }, [])
 
   return (
     <div className="landing">
       <LandingHero
-        onPrimaryCta={() => navigate('/parking')}
-        onSecondaryCta={() => navigate('/parking')}
-        onScanCta={() => navigate('/scan')}
+        onPrimaryCta={() => navigate('/scan', { state: { redirect: '/parking' } })}
       />
       <LandingStats stats={STATS} />
-      <LandingParkings
-        parkings={parkings}
-        onBooking={(parking) => navigate('/scan', { state: { redirect: '/parking', parking } })}
-        onSeeAll={() => navigate('/parking')}
-      />
       <LandingFeatures features={FEATURES} />
       <LandingSteps steps={STEPS} />
       <LandingDownloadCta cdn={CDN} />
