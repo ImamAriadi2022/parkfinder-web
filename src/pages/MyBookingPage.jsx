@@ -8,7 +8,7 @@ import MyBookingList from '../components/pages/MyBookingPage/MyBookingList'
 import MyBookingStats from '../components/pages/MyBookingPage/MyBookingStats'
 import { GuestService } from '../services/api'
 import '../styles/pages/MyBookingPage.css'
-import { cancelBooking, getBookings, markBookingArrived, markParkingCompleted } from '../utils/bookingStore'
+import { cancelBooking, getBookings, markBookingArrived, markParkingCompleted, deleteBooking, clearAllBookings } from '../utils/bookingStore'
 import { hasActiveGuestTicket, saveVerifiedTicket } from '../utils/guestTicketStore'
 
 const CDN = 'https://storage.googleapis.com/parkfinderbucket'
@@ -136,6 +136,22 @@ export default function MyBookingPage() {
     }
   }
 
+  const handleDelete = (booking) => {
+    if (!booking.expired) {
+      if (!window.confirm('Peringatan: Transaksi ini masih aktif. Menghapusnya dari riwayat lokal tidak akan membatalkan sesi di server. Hapus?')) return
+    } else {
+      if (!window.confirm('Hapus item riwayat booking ini?')) return
+    }
+    deleteBooking(booking.ticketCode)
+    reload()
+  }
+
+  const handleClearAll = () => {
+    if (!window.confirm('Apakah Anda yakin ingin menghapus seluruh riwayat booking?')) return
+    clearAllBookings()
+    reload()
+  }
+
   return (
     <div style={{ paddingTop: 86, minHeight: '100vh' }}>
       <Container className="py-4">
@@ -150,7 +166,7 @@ export default function MyBookingPage() {
           }}
         />
         <MyBookingStats activeCount={activeCount} expiredCount={expiredCount} totalCount={bookings.length} />
-        <MyBookingFilters filter={filter} onChange={setFilter} activeCount={activeCount} totalCount={bookings.length} />
+        <MyBookingFilters filter={filter} onChange={setFilter} activeCount={activeCount} totalCount={bookings.length} onClearAll={handleClearAll} />
 
         {displayed.length === 0 ? (
           <MyBookingEmptyState filter={filter} onBooking={() => navigate('/parking')} />
@@ -162,6 +178,7 @@ export default function MyBookingPage() {
             onCompletePark={handleCompletePark}
             onCancel={handleCancel}
             onArrive={handleArrive}
+            onDelete={handleDelete}
             formatDate={fmtDate}
             cdn={CDN}
           />

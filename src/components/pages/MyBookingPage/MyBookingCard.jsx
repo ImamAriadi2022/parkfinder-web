@@ -1,6 +1,6 @@
 import { Badge, Button, Card, Col, Row } from 'react-bootstrap'
 
-export default function MyBookingCard({ booking, index, formatDate, onSwap, onCheckout, onCompletePark, onCancel, onArrive, cdn }) {
+export default function MyBookingCard({ booking, index, formatDate, onSwap, onCheckout, onCompletePark, onCancel, onArrive, onDelete, cdn }) {
   const statusBadge = booking.expired
     ? { label: 'Tidak Aktif', className: 'badge-expired' }
     : booking.completed
@@ -10,9 +10,22 @@ export default function MyBookingCard({ booking, index, formatDate, onSwap, onCh
         : { label: 'Aktif', className: 'badge-pf-green' }
   return (
     <Card
-      className={`booking-card animate-fade-up ${booking.expired ? 'booking-card-expired' : 'booking-card-active'}`}
+      className={`booking-card position-relative animate-fade-up ${booking.expired ? 'booking-card-expired' : 'booking-card-active'}`}
       style={{ animationDelay: `${index * 0.07}s` }}
     >
+      <button
+        className="booking-card-delete-btn"
+        onClick={() => onDelete?.(booking)}
+        title="Hapus dari Riwayat"
+        aria-label="Hapus dari Riwayat"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          <line x1="10" y1="11" x2="10" y2="17"></line>
+          <line x1="14" y1="11" x2="14" y2="17"></line>
+        </svg>
+      </button>
       <Card.Body className="p-4">
         <Row className="align-items-start g-3">
           <Col xs={12} md={4}>

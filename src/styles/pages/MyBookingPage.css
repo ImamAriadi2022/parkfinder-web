@@ -132,3 +132,42 @@
   .booking-stat-value { font-size: 22px; }
   .booking-detail-grid { grid-template-columns: 1fr; }
 }
+
+/* Delete button on booking card */
+.booking-card-delete-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: transparent;
+  border: none;
+  color: var(--pf-text3);
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 5;
+}
+
+.booking-card-delete-btn:hover {
+  color: var(--pf-red) !important;
+  background: var(--pf-border);
+}
+
+/* Clear All button styling */
+.btn-pf-danger-outline {
+  border-color: rgba(239, 83, 80, 0.4) !important;
+  color: var(--pf-red) !important;
+  background: transparent !important;
+  transition: all 0.2s ease;
+}
+
+.btn-pf-danger-outline:hover {
+  background: var(--pf-red-bg) !important;
+  border-color: var(--pf-red) !important;
+  color: var(--pf-red) !important;
+  transform: translateY(-1px);
+}
+

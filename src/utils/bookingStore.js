@@ -109,3 +109,15 @@ export function exitParking(ticketCode) {
 export function completeBooking(ticketCode) {
   markParkingCompleted(ticketCode)
 }
+
+/** Hapus satu booking berdasarkan ticketCode */
+export function deleteBooking(ticketCode) {
+  const list = getBookings().filter(b => b.ticketCode !== ticketCode)
+  localStorage.setItem(KEY, JSON.stringify(list))
+}
+
+/** Hapus semua riwayat booking */
+export function clearAllBookings() {
+  localStorage.removeItem(KEY)
+}
+
