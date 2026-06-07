@@ -95,7 +95,7 @@
   overflow: visible;
   background: radial-gradient(ellipse at center, var(--pf-accent-glow), transparent 70%);
   padding: 8px;
-  min-height: 520px;
+  min-height: 550px;
 }
 
 /* Floating info badges */
@@ -379,7 +379,7 @@
   .hero-title { font-size: 40px; }
   .hero-badge-left,
   .hero-badge-right { display: none; }
-  .hero-3d-container { min-height: 380px; }
+  .hero-3d-container { min-height: 600px; }
 }
 
 @media (max-width: 767px) {
@@ -387,11 +387,11 @@
   .hero-desc { font-size: 15px; }
   .hero-stat-val { font-size: 18px; }
   .hero-inline-stats { border-radius: 12px; }
-  .hero-3d-container { min-height: 320px; padding: 4px; }
+  .hero-3d-container { min-height: 550px; padding: 4px; }
 }
 
 @media (max-width: 576px) {
   .hero-title { font-size: 28px; }
   .hero-stat-item { padding: 10px 4px; }
-  .hero-3d-container { min-height: 280px; }
+  .hero-3d-container { min-height: 360px; }
 }

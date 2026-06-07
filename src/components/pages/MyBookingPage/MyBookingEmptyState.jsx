@@ -13,7 +13,7 @@ export default function MyBookingEmptyState({ filter, onBooking }) {
   return (
     <div className="empty-state-card">
       {/* 3D Car – larger canvas */}
-      <div style={{ width: '100%', maxWidth: 400, margin: '0 auto 8px' }}>
+      <div style={{ width: '100%', maxWidth: 700, margin: '0 auto 8px' }}>
         <Suspense
           fallback={
             <div style={{ height: 280, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -22,11 +22,11 @@ export default function MyBookingEmptyState({ filter, onBooking }) {
           }
         >
           <CarModel3D
-            height={280}
-            scale={2.4}
+            height={600}
+            scale={7.2}
             autoRotate={true}
-            fov={38}
-            cameraPos={[2.8, 0.7, 2.8]}
+            fov={14}
+            cameraPos={[0.95, 0.25, 0.95]}
           />
         </Suspense>
       </div>

@@ -77,11 +77,11 @@ export default function BookingSuccessStep({
               }
             >
               <CarModel3D
-                height={240}
-                scale={2.6}
+                height={520}
+                scale={7.8}
                 autoRotate={true}
-                fov={36}
-                cameraPos={[2.6, 0.6, 2.6]}
+                fov={14}
+                cameraPos={[0.9, 0.2, 0.9]}
               />
             </Suspense>
           </div>

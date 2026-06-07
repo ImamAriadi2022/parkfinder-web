@@ -8,7 +8,7 @@ function HeroCarFallback() {
     <div
       style={{
         width: '100%',
-        height: 520,
+        minHeight: 550,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -47,21 +47,6 @@ export default function LandingHero({ onPrimaryCta, onSecondaryCta, onScanCta })
                 cepat, mudah, dan terpercaya.
               </p>
 
-              {/* Inline stats */}
-              <div className="hero-inline-stats mb-5">
-                {[
-                  { val: '150+', label: 'Gedung' },
-                  { val: '50K+', label: 'Pengguna' },
-                  { val: '99%',  label: 'Berhasil' },
-                  { val: '24/7', label: 'Layanan' },
-                ].map(s => (
-                  <div key={s.label} className="hero-stat-item">
-                    <span className="hero-stat-val">{s.val}</span>
-                    <span className="hero-stat-label">{s.label}</span>
-                  </div>
-                ))}
-              </div>
-
               {/* CTA Buttons */}
               <div className="d-flex flex-wrap gap-3">
                 <Button
@@ -94,11 +79,11 @@ export default function LandingHero({ onPrimaryCta, onSecondaryCta, onScanCta })
             <div className="hero-3d-container">
               <Suspense fallback={<HeroCarFallback />}>
                 <CarModel3D
-                  height={520}
-                  scale={6.5}
+                  height={550}
+                  scale={6.8}
                   autoRotate={true}
-                  fov={28}
-                  cameraPos={[2.2, 0.4, 2.2]}
+                  fov={14}
+                  cameraPos={[0.9, 0.2, 0.9]}
                 />
               </Suspense>
 
